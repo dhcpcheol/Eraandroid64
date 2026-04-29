@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    이 코드는 도구를 사용하여 생성되었습니다.
+    이 코드는 C:\Users\lcj15\source\repos\EraAndroid64\EraAndroid64\AndroidManifest.xml에서 생성되었습니다.
+    파일 내용을 변경하면 잘못된 동작이 발생할 수 있으며,
+    콘텐츠를 다시 생성하면 변경 내용이 손실됩니다.
+-->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.dhcpcheol.eraandroid" platformBuildVersionCode="25" platformBuildVersionName="7.1.1" android:installLocation="auto" android:versionCode="5" android:versionName="1.5.0">
+  <uses-sdk android:minSdkVersion="21" android:targetSdkVersion="24" />
+  <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+  <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+  <application android:name="android.app.Application" android:allowBackup="true" android:extractNativeLibs="true" android:label="EraAndroid">
+    <provider android:name="mono.MonoRuntimeProvider" android:authorities="com.dhcpcheol.eraandroid.mono.MonoRuntimeProvider.__mono_init__" android:exported="false" android:initOrder="2147483647" />
+    <activity android:name="crc64f7520a812a03248f.MainActivity" android:exported="true" android:label="EraAndroid" android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen">
+      <intent-filter>
+        <action android:name="android.intent.action.MAIN" />
+        <category android:name="android.intent.category.LAUNCHER" />
+      </intent-filter>
+    </activity>
+    <activity android:name="crc64f7520a812a03248f.SelectFolderActivity" android:label="길게 눌러서 Emuera 폴더를 선택해주세요" />
+    <activity android:name="crc64f7520a812a03248f.SetFontActivity" android:label="글자크기를 설정한뒤 뒤로가기를 2번 누르세요" />
+    <provider android:name="mono.MonoRuntimeProvider" android:authorities="com.dhcpcheol.eraandroid.mono.MonoRuntimeProvider.__mono_init__" android:exported="false" android:initOrder="1999999999" />
+  </application>
+</manifest>

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    android:versionCode="5"
+    android:versionName="1.5.0"
+    android:installLocation="auto"
+    package="com.dhcpcheol.eraandroid"
+    platformBuildVersionCode="25"
+    platformBuildVersionName="7.1.1">
+	<uses-sdk android:minSdkVersion="21" android:targetSdkVersion="24"/>
+	<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+	<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+	<application
+        android:label="EraAndroid"
+        android:name="android.app.Application"
+        android:allowBackup="true">
+		<provider
+            android:name="mono.MonoRuntimeProvider"
+            android:exported="false"
+            android:authorities="com.dhcpcheol.eraandroid.mono.MonoRuntimeProvider.__mono_init__"
+            android:initOrder="2147483647"/>
+	</application>
+</manifest>

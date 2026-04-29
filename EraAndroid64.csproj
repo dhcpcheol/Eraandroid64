@@ -1,0 +1,92 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net9.0-android</TargetFramework>
+    <SupportedOSPlatformVersion>21</SupportedOSPlatformVersion>
+    <OutputType>Exe</OutputType>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <ApplicationId>com.dhcpcheol.EraAndroid64</ApplicationId>
+    <ApplicationVersion>6</ApplicationVersion>
+    <ApplicationDisplayVersion>1.5</ApplicationDisplayVersion>
+    <!--
+      Enables trim analyzers and full trimming during Release mode.
+      To learn more, see: https://learn.microsoft.com/dotnet/core/deploying/trimming/trimming-options#trimming-granularity
+    -->
+	  <TargetSdkVersion>24</TargetSdkVersion>
+	  <TrimMode>link</TrimMode>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <AndroidPackageFormat>apk</AndroidPackageFormat>
+  </PropertyGroup>
+  <ItemGroup>
+    <AndroidJavaSource Remove="Resources\mipmap-anydpi-v26\**" />
+    <AndroidJavaSource Remove="Resources\mipmap-hdpi\**" />
+    <AndroidJavaSource Remove="Resources\mipmap-mdpi\**" />
+    <AndroidJavaSource Remove="Resources\mipmap-xhdpi\**" />
+    <AndroidJavaSource Remove="Resources\mipmap-xxhdpi\**" />
+    <AndroidJavaSource Remove="Resources\mipmap-xxxhdpi\**" />
+    <AndroidLibrary Remove="Resources\mipmap-anydpi-v26\**" />
+    <AndroidLibrary Remove="Resources\mipmap-hdpi\**" />
+    <AndroidLibrary Remove="Resources\mipmap-mdpi\**" />
+    <AndroidLibrary Remove="Resources\mipmap-xhdpi\**" />
+    <AndroidLibrary Remove="Resources\mipmap-xxhdpi\**" />
+    <AndroidLibrary Remove="Resources\mipmap-xxxhdpi\**" />
+    <AndroidNativeLibrary Remove="Resources\mipmap-anydpi-v26\**" />
+    <AndroidNativeLibrary Remove="Resources\mipmap-hdpi\**" />
+    <AndroidNativeLibrary Remove="Resources\mipmap-mdpi\**" />
+    <AndroidNativeLibrary Remove="Resources\mipmap-xhdpi\**" />
+    <AndroidNativeLibrary Remove="Resources\mipmap-xxhdpi\**" />
+    <AndroidNativeLibrary Remove="Resources\mipmap-xxxhdpi\**" />
+    <AndroidResource Remove="Resources\mipmap-anydpi-v26\**" />
+    <AndroidResource Remove="Resources\mipmap-hdpi\**" />
+    <AndroidResource Remove="Resources\mipmap-mdpi\**" />
+    <AndroidResource Remove="Resources\mipmap-xhdpi\**" />
+    <AndroidResource Remove="Resources\mipmap-xxhdpi\**" />
+    <AndroidResource Remove="Resources\mipmap-xxxhdpi\**" />
+    <Compile Remove="Resources\mipmap-anydpi-v26\**" />
+    <Compile Remove="Resources\mipmap-hdpi\**" />
+    <Compile Remove="Resources\mipmap-mdpi\**" />
+    <Compile Remove="Resources\mipmap-xhdpi\**" />
+    <Compile Remove="Resources\mipmap-xxhdpi\**" />
+    <Compile Remove="Resources\mipmap-xxxhdpi\**" />
+    <EmbeddedResource Remove="Resources\mipmap-anydpi-v26\**" />
+    <EmbeddedResource Remove="Resources\mipmap-hdpi\**" />
+    <EmbeddedResource Remove="Resources\mipmap-mdpi\**" />
+    <EmbeddedResource Remove="Resources\mipmap-xhdpi\**" />
+    <EmbeddedResource Remove="Resources\mipmap-xxhdpi\**" />
+    <EmbeddedResource Remove="Resources\mipmap-xxxhdpi\**" />
+    <JavaSourceJar Remove="Resources\mipmap-anydpi-v26\**" />
+    <JavaSourceJar Remove="Resources\mipmap-hdpi\**" />
+    <JavaSourceJar Remove="Resources\mipmap-mdpi\**" />
+    <JavaSourceJar Remove="Resources\mipmap-xhdpi\**" />
+    <JavaSourceJar Remove="Resources\mipmap-xxhdpi\**" />
+    <JavaSourceJar Remove="Resources\mipmap-xxxhdpi\**" />
+    <None Remove="Resources\mipmap-anydpi-v26\**" />
+    <None Remove="Resources\mipmap-hdpi\**" />
+    <None Remove="Resources\mipmap-mdpi\**" />
+    <None Remove="Resources\mipmap-xhdpi\**" />
+    <None Remove="Resources\mipmap-xxhdpi\**" />
+    <None Remove="Resources\mipmap-xxxhdpi\**" />
+    <ProguardConfiguration Remove="Resources\mipmap-anydpi-v26\**" />
+    <ProguardConfiguration Remove="Resources\mipmap-hdpi\**" />
+    <ProguardConfiguration Remove="Resources\mipmap-mdpi\**" />
+    <ProguardConfiguration Remove="Resources\mipmap-xhdpi\**" />
+    <ProguardConfiguration Remove="Resources\mipmap-xxhdpi\**" />
+    <ProguardConfiguration Remove="Resources\mipmap-xxxhdpi\**" />
+    <TransformFile Remove="Resources\mipmap-anydpi-v26\**" />
+    <TransformFile Remove="Resources\mipmap-hdpi\**" />
+    <TransformFile Remove="Resources\mipmap-mdpi\**" />
+    <TransformFile Remove="Resources\mipmap-xhdpi\**" />
+    <TransformFile Remove="Resources\mipmap-xxhdpi\**" />
+    <TransformFile Remove="Resources\mipmap-xxxhdpi\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Remove="Resources\layout\activity_main.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="Resources\layout\activity_main.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Properties\" />
+  </ItemGroup>
+</Project>

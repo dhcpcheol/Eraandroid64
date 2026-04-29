@@ -1,0 +1,53 @@
+using System.Reflection;
+
+namespace MinorShift.Emuera.GameProc;
+
+[Obfuscation(Exclude = false)]
+internal enum SystemStateCode
+{
+	__CAN_SAVE__ = 65536,
+	__CAN_BEGIN__ = 131072,
+	Title_Begin = 0,
+	Openning = 1,
+	Train_Begin = 16,
+	Train_CallEventTrain = 17,
+	Train_CallShowStatus = 18,
+	Train_CallComAbleXX = 19,
+	Train_CallShowUserCom = 20,
+	Train_WaitInput = 21,
+	Train_CallEventCom = 131094,
+	Train_CallComXX = 131095,
+	Train_CallSourceCheck = 131096,
+	Train_CallEventComEnd = 131097,
+	Train_DoTrain = 26,
+	AfterTrain_Begin = 131104,
+	Ablup_Begin = 48,
+	Ablup_CallShowJuel = 49,
+	Ablup_CallShowAblupSelect = 50,
+	Ablup_WaitInput = 51,
+	Ablup_CallAblupXX = 131124,
+	Turnend_Begin = 131136,
+	Shop_Begin = 65616,
+	Shop_CallEventShop = 196689,
+	Shop_CallShowShop = 65618,
+	Shop_WaitInput = 65619,
+	Shop_CallEventBuy = 196692,
+	SaveGame_Begin = 256,
+	SaveGame_WaitInput = 257,
+	SaveGame_WaitInputOverwrite = 258,
+	SaveGame_CallSaveInfo = 259,
+	LoadGame_Begin = 272,
+	LoadGame_WaitInput = 273,
+	LoadGameOpenning_Begin = 288,
+	LoadGameOpenning_WaitInput = 289,
+	AutoSave_CallSaveInfo = 513,
+	AutoSave_CallUniqueAutosave = 514,
+	AutoSave_Skipped = 515,
+	LoadData_DataLoaded = 528,
+	LoadData_CallSystemLoad = 131601,
+	LoadData_CallEventLoad = 131602,
+	Openning_TitleLoadgame = 544,
+	System_Reloaderb = 560,
+	First_Begin = 576,
+	Normal = 262143
+}

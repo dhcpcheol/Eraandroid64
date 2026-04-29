@@ -1,0 +1,5 @@
+layout\main;layout\main
+layout\selectfolder;layout\selectfolder
+layout\setfont;layout\setfont
+values\ic_launcher_background;values\ic_launcher_background
+values\strings;values\strings
