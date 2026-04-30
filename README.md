@@ -1,4 +1,4 @@
-#Eraandroid64
+##Eraandroid64
 
 Era 에뮬레이터인 Eraandroid를 64비트 ARM환경에서 구동 가능하도록 이식하였습니다.
 
