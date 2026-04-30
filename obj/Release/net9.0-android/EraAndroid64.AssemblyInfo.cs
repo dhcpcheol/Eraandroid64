@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("EraAndroid64")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Release")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.5.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.5")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.5+04ae1562180fe7b68377fbca7d966287ef3fcaf1")]
 [assembly: System.Reflection.AssemblyProductAttribute("EraAndroid64")]
 [assembly: System.Reflection.AssemblyTitleAttribute("EraAndroid64")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.5.0.0")]

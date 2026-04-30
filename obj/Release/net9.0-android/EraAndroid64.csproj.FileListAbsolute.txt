@@ -22,6 +22,7 @@ C:\Users\lcj15\source\repos\EraAndroid64\EraAndroid64\obj\Release\net9.0-android
 C:\Users\lcj15\source\repos\EraAndroid64\EraAndroid64\obj\Release\net9.0-android\EraAndroid64.AssemblyInfoInputs.cache
 C:\Users\lcj15\source\repos\EraAndroid64\EraAndroid64\obj\Release\net9.0-android\EraAndroid64.AssemblyInfo.cs
 C:\Users\lcj15\source\repos\EraAndroid64\EraAndroid64\obj\Release\net9.0-android\EraAndroid64.csproj.CoreCompileInputs.cache
+C:\Users\lcj15\source\repos\EraAndroid64\EraAndroid64\obj\Release\net9.0-android\EraAndroid64.sourcelink.json
 C:\Users\lcj15\source\repos\EraAndroid64\EraAndroid64\obj\Release\net9.0-android\EraAndroid64.dll
 C:\Users\lcj15\source\repos\EraAndroid64\EraAndroid64\obj\Release\net9.0-android\EraAndroid64.pdb
 C:\Users\lcj15\source\repos\EraAndroid64\EraAndroid64\obj\Release\net9.0-android\EraAndroid64.genruntimeconfig.cache
