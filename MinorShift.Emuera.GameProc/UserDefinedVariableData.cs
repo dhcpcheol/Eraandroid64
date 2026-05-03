@@ -302,7 +302,7 @@ internal sealed class UserDefinedVariableData
 				{
 					throw new CodeEE("カンマの後に有効な定数式が指定されていません", sc);
 				}
-				if (!(ExpressionParser.ReduceIntegerTerm(wc, TermEndWith.Comma_Assignment).Restructure(null) is SingleTerm singleTerm) || singleTerm.GetOperandType() != typeof(long))
+				if (!(ExpressionParser.ReduceIntegerTerm(wc, TermEndWith.Comma_Assignment).Restructure(GlobalStatic.EMediator) is SingleTerm singleTerm) || singleTerm.GetOperandType() != typeof(long))
 				{
 					throw new CodeEE("カンマの後に有効な定数式が指定されていません", sc);
 				}

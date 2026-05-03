@@ -26,21 +26,21 @@ internal static class ConvertingTools
 		canvas.DrawPath(rect.ToPath(), paint);
 	}
 
-	public static void DrawString(this Canvas canvas, string str, float x, float y, string fontName, TypefaceStyle style = TypefaceStyle.Normal)
-	{
-		paint.Color = Config.ForeColor;
+    public static void DrawString(this Canvas canvas, string str, float x, float y, string fontName, TypefaceStyle style = TypefaceStyle.Normal)
+    {
+        paint.Color = Config.ForeColor;
 		paint.TextSize = Config.FontSize;
-		canvas.DrawText(str, x, y - paint.Ascent(), paint);
-	}
+        canvas.DrawText(str, x, y - paint.Ascent(), paint);
+    }
 
-	public static void DrawString(this Canvas canvas, string str, float x, float y, Android.Graphics.Color textColor, string fontName, TypefaceStyle style = TypefaceStyle.Normal)
-	{
-		paint.Color = textColor;
-		paint.TextSize = Config.FontSize;
-		canvas.DrawText(str, x, y - paint.Ascent(), paint);
-	}
+    public static void DrawString(this Canvas canvas, string str, float x, float y, Android.Graphics.Color textColor, string fontName, TypefaceStyle style = TypefaceStyle.Normal)
+    {
+        paint.Color = textColor;
+        paint.TextSize = Config.FontSize;
+        canvas.DrawText(str, x, y - paint.Ascent(), paint);
+    }
 
-	public static string ToHalf(this string WideStr)
+    public static string ToHalf(this string WideStr)
 	{
 		if (WideStr == null)
 		{

@@ -3,6 +3,8 @@ using MinorShift.Emuera.GameData;
 using MinorShift.Emuera.GameData.Variable;
 using MinorShift.Emuera.GameView;
 using MinorShift.Emuera.Sub;
+using System.Linq;
+using System.IO;
 
 namespace MinorShift.Emuera.GameProc;
 
@@ -23,13 +25,25 @@ internal sealed class HeaderFileLoader
 		this.idDic = idDic;
 	}
 
-	public bool LoadHeaderFiles(string headerDir, bool displayReport)
-	{
-		List<KeyValuePair<string, string>> files = Config.GetFiles(headerDir, "*.ERH");
-		bool flag = true;
-		try
-		{
-			for (int i = 0; i < files.Count; i++)
+    public bool LoadHeaderFiles(string headerDir, bool displayReport)
+    {
+        List<KeyValuePair<string, string>> files = Config.GetFiles(headerDir, "*.ERH");
+
+        files = files
+            .OrderBy(f =>
+            {
+                string name = Path.GetFileName(f.Value);
+                if (name.Equals("DIM.ERH", StringComparison.OrdinalIgnoreCase)) return 0;
+                if (name.Equals("DIM_t.ERH", StringComparison.OrdinalIgnoreCase)) return 1;
+                return 2;
+            })
+            .ThenBy(f => f.Value)
+            .ToList();
+
+        bool flag = true;
+        try
+        {
+            for (int i = 0; i < files.Count; i++)
 			{
 				string key = files[i].Key;
 				string value = files[i].Value;

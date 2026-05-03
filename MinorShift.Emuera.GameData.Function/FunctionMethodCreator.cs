@@ -510,22 +510,42 @@ internal static class FunctionMethodCreator
 		}
 	}
 
-	private sealed class CheckfontMethod : FunctionMethod
-	{
-		public CheckfontMethod()
-		{
-			base.ReturnType = typeof(long);
-			argumentTypeArray = new Type[1] { typeof(string) };
-			base.CanRestructure = true;
-		}
+    private sealed class CheckfontMethod : FunctionMethod
+    {
+        public CheckfontMethod()
+        {
+            base.ReturnType = typeof(long);
+            argumentTypeArray = new Type[1] { typeof(string) };
+            base.CanRestructure = true;
+        }
 
-		public override long GetIntValue(ExpressionMediator exm, IOperandTerm[] arguments)
-		{
-			return 1L;
-		}
-	}
+        public override long GetIntValue(ExpressionMediator exm, IOperandTerm[] arguments)
+        {
+            return 1L;
+        }
+    }
 
-	private sealed class CheckdataMethod : FunctionMethod
+    private sealed class TwDummyIntMethod : FunctionMethod
+    {
+        public TwDummyIntMethod()
+        {
+            base.ReturnType = typeof(long);
+            argumentTypeArray = null;
+            base.CanRestructure = false;
+        }
+
+        public override string CheckArgumentType(string name, IOperandTerm[] arguments)
+        {
+            return null;
+        }
+
+        public override long GetIntValue(ExpressionMediator exm, IOperandTerm[] arguments)
+        {
+            return 0L;
+        }
+    }
+
+        private sealed class CheckdataMethod : FunctionMethod
 	{
 		private string name;
 
@@ -3330,9 +3350,17 @@ internal static class FunctionMethodCreator
 		methodList["GETFOCUSCOLOR"] = new GetFocusColorMethod();
 		methodList["GETBGCOLOR"] = new GetBGColorMethod(isDef: false);
 		methodList["GETDEFBGCOLOR"] = new GetBGColorMethod(isDef: true);
-		methodList["GETSTYLE"] = new GetStyleMethod();
-		methodList["GETFONT"] = new GetFontMethod();
-		methodList["BARSTR"] = new BarStringMethod();
+        methodList["GETSTYLE"] = new GetStyleMethod();
+
+        methodList["SPRITECREATED"] = new TwDummyIntMethod();
+        methodList["GCREATED"] = new TwDummyIntMethod();
+        methodList["MOUSEX"] = new TwDummyIntMethod();
+        methodList["MOUSEY"] = new TwDummyIntMethod();
+        methodList["SPRITEHEIGHT"] = new TwDummyIntMethod();
+        methodList["SPRITEWIDTH"] = new TwDummyIntMethod();
+
+        methodList["GETFONT"] = new GetFontMethod();
+        methodList["BARSTR"] = new BarStringMethod();
 		methodList["CURRENTALIGN"] = new CurrentAlignMethod();
 		methodList["CURRENTREDRAW"] = new CurrentRedrawMethod();
 		methodList["COLOR_FROMNAME"] = new ColorFromNameMethod();

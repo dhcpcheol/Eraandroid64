@@ -254,13 +254,41 @@ internal sealed class FunctionIdentifier
 			base.ArgBuilder = ArgumentParser.GetArgumentBuilder(FunctionArgType.STR_EXPRESSION);
 		}
 
-		public override void DoInstruction(ExpressionMediator exm, InstructionLine func, ProcessState state)
-		{
-			string text = null;
-			text = ((!func.Argument.IsConst) ? ((ExpressionArgument)func.Argument).Term.GetStrValue(exm) : func.Argument.ConstStr);
-			exm.Console.PrintHtml(text);
-		}
-	}
+        public override void DoInstruction(ExpressionMediator exm, InstructionLine func, ProcessState state)
+        {
+            string text = func.Argument.IsConst
+                ? func.Argument.ConstStr
+                : ((ExpressionArgument)func.Argument).Term.GetStrValue(exm);
+
+            // 버튼을 [숫자] 텍스트로 변환
+            text = System.Text.RegularExpressions.Regex.Replace(
+                text,
+                @"<button\s+value=['""]?(\d+)['""]?\s*>\s*\[\s*\d+\s*\]\s*(.*?)</button>",
+                "[$1] $2"
+            );
+
+            text = System.Text.RegularExpressions.Regex.Replace(
+                text,
+                @"<button\s+value=['""]?(\d+)['""]?\s*>(.*?)</button>",
+                "[$1] $2"
+            );
+
+            text = System.Text.RegularExpressions.Regex.Replace(text, @"<br\s*/?>", "\n");
+            text = System.Text.RegularExpressions.Regex.Replace(text, @"</p\s*>", "\n");
+            text = System.Text.RegularExpressions.Regex.Replace(text, @"<.*?>", "");
+
+            text = text.Replace("&nbsp;", " ");
+            text = System.Text.RegularExpressions.Regex.Replace(text, @"[ \t]+", " ");
+            text = System.Text.RegularExpressions.Regex.Replace(text, @"\n{3,}", "\n\n");
+            text = text.Trim();
+
+            if (!string.IsNullOrWhiteSpace(text))
+            {
+                exm.Console.Print(text);
+                exm.Console.NewLine();
+            }
+        }
+    }
 
 	private sealed class HTML_TAGSPLIT_Instruction : AbstractInstruction
 	{
@@ -2741,6 +2769,17 @@ internal sealed class FunctionIdentifier
 		addFunction(FunctionCode.HTML_PRINT, new HTML_PRINT_Instruction());
 		addFunction(FunctionCode.HTML_TAGSPLIT, new HTML_TAGSPLIT_Instruction());
 		addFunction(FunctionCode.PRINT_IMG, new PRINT_IMG_Instruction());
+        addFunction(FunctionCode.SPRITECREATE, argumentBuilderDictionary[FunctionArgType.FORM_STR_ANY], 6);
+        addFunction(FunctionCode.SPRITEANIMECREATE, argumentBuilderDictionary[FunctionArgType.FORM_STR_ANY], 6);
+        addFunction(FunctionCode.SPRITEANIMEADDFRAME, argumentBuilderDictionary[FunctionArgType.FORM_STR_ANY], 6);
+        addFunction(FunctionCode.SPRITEDISPOSE, argumentBuilderDictionary[FunctionArgType.FORM_STR_ANY], 6);
+        addFunction(FunctionCode.GCREATE, argumentBuilderDictionary[FunctionArgType.INT_ANY], 6);
+        addFunction(FunctionCode.GDISPOSE, argumentBuilderDictionary[FunctionArgType.INT_ANY], 6);
+        addFunction(FunctionCode.GCLEAR, argumentBuilderDictionary[FunctionArgType.INT_ANY], 6);
+        addFunction(FunctionCode.GDRAWSPRITE, argumentBuilderDictionary[FunctionArgType.FORM_STR_ANY], 6);
+        addFunction(FunctionCode.ARRAYMSORT, argumentBuilderDictionary[FunctionArgType.FORM_STR_ANY], 6);
+        addFunction(FunctionCode.LOADTEXT, argumentBuilderDictionary[FunctionArgType.INT_ANY], 6);
+        addFunction(FunctionCode.SAVETEXT, argumentBuilderDictionary[FunctionArgType.FORM_STR_ANY], 6);
 		addFunction(FunctionCode.PRINT_RECT, new PRINT_RECT_Instruction());
 		addFunction(FunctionCode.PRINT_SPACE, new PRINT_SPACE_Instruction());
 		addFunction(FunctionCode.TOOLTIP_SETCOLOR, new TOOLTIP_SETCOLOR_Instruction());

@@ -972,15 +972,12 @@ public sealed class EmueraConsole : IDisposable
 		{
 			return;
 		}
-		if (forceTextBoxColor)
-		{
-			for (uint num = WinmmTimer.TickCount - lastBgColorChange; num < 200; num = WinmmTimer.TickCount - lastBgColorChange)
-			{
-			}
-			GlobalStatic.FrontEnd.TextBoxBackColor = bgColor;
-			lastBgColorChange = WinmmTimer.TickCount;
-		}
-		verticalScrollBarUpdate();
+        if (forceTextBoxColor)
+        {
+            GlobalStatic.FrontEnd.TextBoxBackColor = bgColor;
+            lastBgColorChange = WinmmTimer.TickCount;
+        }
+        verticalScrollBarUpdate();
 		GlobalStatic.FrontEnd.Refresh();
 	}
 
@@ -1498,15 +1495,12 @@ public sealed class EmueraConsole : IDisposable
 	{
 		bgColor = color;
 		forceTextBoxColor = true;
-		if (redraw != ConsoleRedraw.None || !GlobalStatic.FrontEnd.ScrollBar.IsBackLog)
-		{
-			for (uint num = WinmmTimer.TickCount - lastBgColorChange; num < 200; num = WinmmTimer.TickCount - lastBgColorChange)
-			{
-			}
-			RefreshStrings(force_Paint: true);
-			lastBgColorChange = WinmmTimer.TickCount;
-		}
-	}
+        if (redraw != ConsoleRedraw.None || !GlobalStatic.FrontEnd.ScrollBar.IsBackLog)
+        {
+            RefreshStrings(force_Paint: true);
+            lastBgColorChange = WinmmTimer.TickCount;
+        }
+    }
 
 	private void addRangeDisplayLine(ConsoleDisplayLine[] lineList)
 	{

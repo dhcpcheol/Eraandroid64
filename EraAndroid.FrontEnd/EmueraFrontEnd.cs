@@ -1,13 +1,14 @@
-using System;
-using System.Drawing;
-using System.Reflection;
 using Android.Content;
 using Android.Graphics;
+using Android.OS;
 using Android.Runtime;
 using Android.Util;
 using Android.Views;
 using EmueraFramework;
 using MinorShift.Emuera;
+using System;
+using System.Drawing;
+using System.Reflection;
 using Config = MinorShift.Emuera.Config;
 
 namespace EraAndroid.FrontEnd;
@@ -15,7 +16,8 @@ namespace EraAndroid.FrontEnd;
 [Register("EraAndroid.FrontEnd.EmueraFrontEnd")]
 public class EmueraFrontEnd : View, IFrontEnd
 {
-	private class EmueraScrollbar : IScrollBar
+    private bool refreshPosted;
+    private class EmueraScrollbar : IScrollBar
 	{
 		private EmueraFrontEnd _console;
 
@@ -279,15 +281,29 @@ public class EmueraFrontEnd : View, IFrontEnd
 		GameData.MainActivity.Close();
 	}
 
-	public void Refresh()
-	{
-		if (!GameData.MainActivity.EmueraInitializing)
-		{
-			RequestLayout();
-		}
-	}
+    public void Refresh()
+    {
+        if (GameData.MainActivity.EmueraInitializing)
+        {
+            return;
+        }
 
-	public void update_lastinput()
+        if (refreshPosted)
+        {
+            return;
+        }
+
+        refreshPosted = true;
+
+        Post(() =>
+        {
+            refreshPosted = false;
+            RequestLayout();
+            Invalidate();
+        });
+    }
+
+    public void update_lastinput()
 	{
 		GameData.InputText.Text = lastInput;
 	}
