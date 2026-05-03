@@ -284,9 +284,8 @@ public class EmueraFrontEnd : View, IFrontEnd
     public void Refresh()
     {
         if (GameData.MainActivity.EmueraInitializing)
-        {
             return;
-        }
+
 
         if (refreshPosted)
         {

@@ -7,6 +7,18 @@
       "RelativeMoniker": "D:0:0:{38ECC014-8A1E-E93D-A1A4-8AFDB3BEEFA0}|EraAndroid64.csproj|solutionrelative:eraandroid.frontend\\emuerafrontend.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
+      "AbsoluteMoniker": "D:0:0:{38ECC014-8A1E-E93D-A1A4-8AFDB3BEEFA0}|EraAndroid64.csproj|d:\\eraandroid_pj\\eraandroid64\\minorshift.emuera.gameview\\consolerectangleshapepart.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{38ECC014-8A1E-E93D-A1A4-8AFDB3BEEFA0}|EraAndroid64.csproj|solutionrelative:minorshift.emuera.gameview\\consolerectangleshapepart.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{38ECC014-8A1E-E93D-A1A4-8AFDB3BEEFA0}|EraAndroid64.csproj|d:\\eraandroid_pj\\eraandroid64\\eraandroid64.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
+      "RelativeMoniker": "D:0:0:{38ECC014-8A1E-E93D-A1A4-8AFDB3BEEFA0}|EraAndroid64.csproj|solutionrelative:eraandroid64.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{38ECC014-8A1E-E93D-A1A4-8AFDB3BEEFA0}|EraAndroid64.csproj|d:\\eraandroid_pj\\eraandroid64\\androidmanifest.xml||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
+      "RelativeMoniker": "D:0:0:{38ECC014-8A1E-E93D-A1A4-8AFDB3BEEFA0}|EraAndroid64.csproj|solutionrelative:androidmanifest.xml||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{38ECC014-8A1E-E93D-A1A4-8AFDB3BEEFA0}|EraAndroid64.csproj|d:\\eraandroid_pj\\eraandroid64\\minorshift.emuera.gameview\\emueraconsole.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{38ECC014-8A1E-E93D-A1A4-8AFDB3BEEFA0}|EraAndroid64.csproj|solutionrelative:minorshift.emuera.gameview\\emueraconsole.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
@@ -62,8 +74,55 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 0,
+          "SelectedChildIndex": 5,
           "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{f96a0d64-71fd-316f-b663-924c78154f2a}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{cce594b6-0c39-4442-ba28-10c64ac7e89f}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "ConsoleRectangleShapePart.cs",
+              "DocumentMoniker": "D:\\eraandroid_pj\\Eraandroid64\\MinorShift.Emuera.GameView\\ConsoleRectangleShapePart.cs",
+              "RelativeDocumentMoniker": "MinorShift.Emuera.GameView\\ConsoleRectangleShapePart.cs",
+              "ToolTip": "D:\\eraandroid_pj\\Eraandroid64\\MinorShift.Emuera.GameView\\ConsoleRectangleShapePart.cs",
+              "RelativeToolTip": "MinorShift.Emuera.GameView\\ConsoleRectangleShapePart.cs",
+              "ViewState": "AgIAADQAAAAAAAAAAAD4v08AAAA2AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-03T04:54:02.659Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "EraAndroid64",
+              "DocumentMoniker": "D:\\eraandroid_pj\\Eraandroid64\\EraAndroid64.csproj",
+              "RelativeDocumentMoniker": "EraAndroid64.csproj",
+              "ToolTip": "D:\\eraandroid_pj\\Eraandroid64\\EraAndroid64.csproj",
+              "RelativeToolTip": "EraAndroid64.csproj",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABEAAABOAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
+              "WhenOpened": "2026-05-03T04:06:50.923Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "AndroidManifest.xml",
+              "DocumentMoniker": "D:\\eraandroid_pj\\Eraandroid64\\AndroidManifest.xml",
+              "RelativeDocumentMoniker": "AndroidManifest.xml",
+              "ToolTip": "D:\\eraandroid_pj\\Eraandroid64\\AndroidManifest.xml",
+              "RelativeToolTip": "AndroidManifest.xml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAcAAAAlAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003576|",
+              "WhenOpened": "2026-05-03T04:06:30.638Z",
+              "EditorCaption": ""
+            },
             {
               "$type": "Document",
               "DocumentIndex": 0,
@@ -72,14 +131,14 @@
               "RelativeDocumentMoniker": "EraAndroid.FrontEnd\\EmueraFrontEnd.cs",
               "ToolTip": "D:\\eraandroid_pj\\Eraandroid64\\EraAndroid.FrontEnd\\EmueraFrontEnd.cs",
               "RelativeToolTip": "EraAndroid.FrontEnd\\EmueraFrontEnd.cs",
-              "ViewState": "AgIAAAQAAAAAAAAAAAAswA8AAAAwAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAsAAAAoAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2026-05-02T08:26:54.789Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 5,
               "Title": "ConvertingTools.cs",
               "DocumentMoniker": "D:\\eraandroid_pj\\Eraandroid64\\MinorShift\\ConvertingTools.cs",
               "RelativeDocumentMoniker": "MinorShift\\ConvertingTools.cs",
@@ -91,7 +150,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 6,
               "Title": "ConsoleStyledString.cs",
               "DocumentMoniker": "D:\\eraandroid_pj\\Eraandroid64\\MinorShift.Emuera.GameView\\ConsoleStyledString.cs",
               "RelativeDocumentMoniker": "MinorShift.Emuera.GameView\\ConsoleStyledString.cs",
@@ -103,7 +162,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 7,
               "Title": "ConsoleButtonString.cs",
               "DocumentMoniker": "D:\\eraandroid_pj\\Eraandroid64\\MinorShift.Emuera.GameView\\ConsoleButtonString.cs",
               "RelativeDocumentMoniker": "MinorShift.Emuera.GameView\\ConsoleButtonString.cs",
@@ -115,7 +174,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
+              "DocumentIndex": 8,
               "Title": "ConsoleDisplayLine.cs",
               "DocumentMoniker": "D:\\eraandroid_pj\\Eraandroid64\\MinorShift.Emuera.GameView\\ConsoleDisplayLine.cs",
               "RelativeDocumentMoniker": "MinorShift.Emuera.GameView\\ConsoleDisplayLine.cs",
@@ -127,7 +186,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 4,
               "Title": "EmueraConsole.cs",
               "DocumentMoniker": "D:\\eraandroid_pj\\Eraandroid64\\MinorShift.Emuera.GameView\\EmueraConsole.cs",
               "RelativeDocumentMoniker": "MinorShift.Emuera.GameView\\EmueraConsole.cs",
@@ -139,7 +198,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 6,
+              "DocumentIndex": 9,
               "Title": "SetFontActivity.cs",
               "DocumentMoniker": "D:\\eraandroid_pj\\Eraandroid64\\EraAndroid\\SetFontActivity.cs",
               "RelativeDocumentMoniker": "EraAndroid\\SetFontActivity.cs",
@@ -151,7 +210,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 8,
+              "DocumentIndex": 11,
               "Title": "FunctionMethodCreator.cs",
               "DocumentMoniker": "D:\\eraandroid_pj\\Eraandroid64\\MinorShift.Emuera.GameData.Function\\FunctionMethodCreator.cs",
               "RelativeDocumentMoniker": "MinorShift.Emuera.GameData.Function\\FunctionMethodCreator.cs",
@@ -163,7 +222,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 10,
+              "DocumentIndex": 13,
               "Title": "HeaderFileLoader.cs",
               "DocumentMoniker": "D:\\eraandroid_pj\\Eraandroid64\\MinorShift.Emuera.GameProc\\HeaderFileLoader.cs",
               "RelativeDocumentMoniker": "MinorShift.Emuera.GameProc\\HeaderFileLoader.cs",
@@ -175,7 +234,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 7,
+              "DocumentIndex": 10,
               "Title": "FunctionIdentifier.cs",
               "DocumentMoniker": "D:\\eraandroid_pj\\Eraandroid64\\MinorShift.Emuera.GameProc.Function\\FunctionIdentifier.cs",
               "RelativeDocumentMoniker": "MinorShift.Emuera.GameProc.Function\\FunctionIdentifier.cs",
@@ -187,7 +246,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 9,
+              "DocumentIndex": 12,
               "Title": "FunctionCode.cs",
               "DocumentMoniker": "D:\\eraandroid_pj\\Eraandroid64\\MinorShift.Emuera.GameProc.Function\\FunctionCode.cs",
               "RelativeDocumentMoniker": "MinorShift.Emuera.GameProc.Function\\FunctionCode.cs",
@@ -199,7 +258,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 11,
+              "DocumentIndex": 14,
               "Title": "UserDefinedVariableData.cs",
               "DocumentMoniker": "D:\\eraandroid_pj\\Eraandroid64\\MinorShift.Emuera.GameProc\\UserDefinedVariableData.cs",
               "RelativeDocumentMoniker": "MinorShift.Emuera.GameProc\\UserDefinedVariableData.cs",
@@ -211,7 +270,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 12,
+              "DocumentIndex": 15,
               "Title": "SelectFolderActivity.cs",
               "DocumentMoniker": "D:\\eraandroid_pj\\Eraandroid64\\EraAndroid\\SelectFolderActivity.cs",
               "RelativeDocumentMoniker": "EraAndroid\\SelectFolderActivity.cs",
@@ -220,10 +279,6 @@
               "ViewState": "AgIAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2026-05-01T20:39:33.741Z"
-            },
-            {
-              "$type": "Bookmark",
-              "Name": "ST:0:0:{cce594b6-0c39-4442-ba28-10c64ac7e89f}"
             }
           ]
         }
