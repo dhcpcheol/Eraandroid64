@@ -7,8 +7,8 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <ApplicationId>com.dhcpcheol.EraAndroid64</ApplicationId>
     <ApplicationVersion>6</ApplicationVersion>
-    <ApplicationDisplayVersion>1.5</ApplicationDisplayVersion>
-    <!--
+	  <ApplicationDisplayVersion>1.6-beta.1</ApplicationDisplayVersion>
+	  <!--
       Enables trim analyzers and full trimming during Release mode.
       To learn more, see: https://learn.microsoft.com/dotnet/core/deploying/trimming/trimming-options#trimming-granularity
     -->

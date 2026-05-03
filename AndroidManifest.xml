@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     android:versionCode="5"
-    android:versionName="1.5.0"
-    android:installLocation="auto"
+android:versionName="1.6-beta.1"
+		  android:installLocation="auto"
     package="com.dhcpcheol.eraandroid"
     platformBuildVersionCode="25"
     platformBuildVersionName="7.1.1">
