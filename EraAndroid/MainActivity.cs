@@ -85,9 +85,12 @@ public class MainActivity : Activity
     }
 
     private void Initialize(string eraPath)
-	{
+    {
+        // 구상 초기화 시작 지점을 기록한다.
+        FileLog.Info("Initialize", "Start: " + eraPath);
+
         inputEditText = FindViewById<EditText>(global::EraAndroid64.Resource.Id.inputEditText);
-		inputEditText.KeyPress += InputEditText_KeyPress;
+        inputEditText.KeyPress += InputEditText_KeyPress;
 		GameData.InputText = inputEditText;
 		Program.Main(this, GameData.FrontEnd, eraPath);
 		inputEditText.SetBackgroundColor(Config.BackColor);
@@ -98,22 +101,29 @@ public class MainActivity : Activity
 			{
 				GlobalStatic.Console.Initialize();
 			}
-			catch (System.Exception ex)
-			{
-				FileLog.Error("Initialize Error", ex.Message);
-				Toast.MakeText(this, ex.Message, ToastLength.Long).Show();
-				Task.Delay(1500).Wait();
-				Finish();
-			}
-		}).ContinueWith(delegate(Task task)
+            catch (System.Exception ex)
+            {
+                // 예외 메시지만 저장하면 원인 추적이 어렵기 때문에 전체 스택트레이스를 기록한다.
+                FileLog.Error("Initialize Error", ex.ToString());
+
+                // 사용자에게는 간단한 메시지만 표시한다.
+                Toast.MakeText(this, ex.Message, ToastLength.Long).Show();
+
+                Task.Delay(1500).Wait();
+                Finish();
+            }
+        }).ContinueWith(delegate(Task task)
 		{
-			if (!task.IsFaulted)
-			{
-				EmueraInitializing = false;
-				GameData.FrontEnd.Handler.Post(GameData.FrontEnd.RequestLayout);
-				GC.Collect();
-			}
-		});
+            if (!task.IsFaulted)
+            {
+                // 구상 초기화 완료 시점과 메모리 상태를 기록한다.
+                FileLog.Info("Initialize", "Completed. Memory: " + (GC.GetTotalMemory(false) / 1024 / 1024) + " MB");
+
+                EmueraInitializing = false;
+                GameData.FrontEnd.Handler.Post(GameData.FrontEnd.RequestLayout);
+                GC.Collect();
+            }
+        });
 		Task.Run(async delegate
 		{
 			while (EmueraInitializing)
@@ -171,28 +181,67 @@ public class MainActivity : Activity
         // 버튼 클릭 시 현재 상태 정보를 표시
         debugButton.Click += (sender, e) =>
         {
-            // 현재 메모리 사용량을 MB 단위로 계산한다.
             long memoryMb = GC.GetTotalMemory(false) / 1024 / 1024;
 
-            // 사용자가 선택한 구상 폴더 경로를 저장소에서 읽어온다.
             string selectedPath = DB.Load("selectedPath");
 
-            // 앱 버전명을 가져온다.
             string appVersion = PackageManager
                 .GetPackageInfo(PackageName, 0)
                 .VersionName;
 
-            // 현재 앱 상태 정보를 간단히 표시한다.
+            // 현재 상태 출력
+            string debugInfo =
+                $"Version: {appVersion}\n" +
+                $"Memory: {memoryMb} MB\n" +
+                $"SDK: {Build.VERSION.SdkInt}\n" +
+                $"Path: {selectedPath}\n" +
+                $"Emuera: {GlobalStatic.FrontEnd?.InternalEmueraVer}\n" +
+                $"Log: {FileLog.LogFilePath}";
+
+            // 사용자가 DEBUG 버튼을 누른 시점의 상태를 로그에도 남긴다.
+            // 버그 제보 시 해당 시점의 메모리, 경로, 버전 정보를 확인하기 위함이다.
+            FileLog.Info("DebugInfo", debugInfo);
+
             Toast.MakeText(
-     this,
-     $"Version: {appVersion}\n" +
-     $"Memory: {memoryMb} MB\n" +
-     $"SDK: {Build.VERSION.SdkInt}\n" +
-     $"Path: {selectedPath}\n" +
-     $"Emuera: {GlobalStatic.FrontEnd?.InternalEmueraVer}\n" +
-     $"Log: {FileLog.LogFilePath}",
-     ToastLength.Long
- ).Show();
+                this,
+                debugInfo,
+                ToastLength.Long
+            ).Show();
+
+            // 로그 파일 공유
+            try
+            {
+                string logText = "";
+
+                // 로그 파일이 있으면 내용을 읽어온다.
+                if (File.Exists(FileLog.LogFilePath))
+                {
+                    logText = File.ReadAllText(FileLog.LogFilePath);
+
+                    // 로그가 너무 길면 공유 앱이 멈출 수 있으므로 마지막 20000자만 공유한다.
+                    if (logText.Length > 20000)
+                    {
+                        logText = logText.Substring(logText.Length - 20000);
+                    }
+                }
+                else
+                {
+                    logText = "로그 파일이 존재하지 않습니다.";
+                }
+
+                // 로그 내용을 텍스트로 공유한다.
+                var intent = new Intent(Intent.ActionSend);
+                intent.SetType("text/plain");
+                intent.PutExtra(Intent.ExtraSubject, "EraAndroid Debug Log");
+                intent.PutExtra(Intent.ExtraText, logText);
+
+                StartActivity(Intent.CreateChooser(intent, "로그 내용 공유"));
+            }
+
+            catch (System.Exception ex)
+            {
+                Toast.MakeText(this, $"공유 실패: {ex.Message}", ToastLength.Long).Show();
+            }
         };
 
         // 버튼 위치 및 크기 설정
