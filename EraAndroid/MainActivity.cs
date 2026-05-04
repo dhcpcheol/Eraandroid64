@@ -166,8 +166,11 @@ public class MainActivity : Activity
         GameData.FrontEnd = FindViewById<EmueraFrontEnd>(global::EraAndroid64.Resource.Id.emueraConsole);
         GameData.ScrollView = FindViewById<ScrollView>(global::EraAndroid64.Resource.Id.emueraScrollView);
 
-        // 디버그 버튼 추가 (UI 위에 띄움)
-        AddDebugButton();
+        // 디버그 모드가 켜져 있을 때만 게임 화면에 DEBUG 버튼을 표시한다.
+        if (DB.Load("debugMode") == "true")
+        {
+            AddDebugButton();
+        }
     }
 
     // dp 단위를 실제 픽셀로 변환하는 함수

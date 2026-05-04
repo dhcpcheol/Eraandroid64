@@ -5,6 +5,7 @@ using Android.Content.PM;
 using Android.OS;
 using Android.Views;
 using Android.Widget;
+using Android.Graphics;
 
 namespace EraAndroid;
 
@@ -29,6 +30,11 @@ public class SelectFolderActivity : Activity
 		lv.KeyPress += Lv_KeyPress;
         preSelected = DB.Load("selectedPath");
 
+        preSelected = DB.Load("selectedPath");
+
+        // 경로 선택 화면에서 디버그 모드를 켜고 끌 수 있도록 체크박스를 추가한다.
+        AddDebugModeCheckBox();
+
         if (string.IsNullOrEmpty(preSelected) || !Directory.Exists(preSelected))
         {
             string[] candidates =
@@ -45,9 +51,50 @@ public class SelectFolderActivity : Activity
         UpdateDirectories(preSelected);
     }
 
-	private void Lv_KeyPress(object sender, View.KeyEventArgs e)
-	{
-		if (e.Event.Action == KeyEventActions.Down)
+    // dp 단위를 실제 픽셀로 변환한다.
+    // 화면 밀도에 따라 체크박스 위치와 크기가 달라지는 것을 방지하기 위해 사용한다.
+    private int Dp(float value)
+    {
+        return (int)Android.Util.TypedValue.ApplyDimension(
+            Android.Util.ComplexUnitType.Dip,
+            value,
+            Resources.DisplayMetrics
+        );
+    }
+
+    // 경로 선택 화면에 디버그 모드 체크박스를 추가한다.
+    // 체크 상태는 DB에 저장하여 앱 재실행 후에도 유지한다.
+    private void AddDebugModeCheckBox()
+    {
+        CheckBox debugCheckBox = new CheckBox(this);
+
+        debugCheckBox.Text = "디버그 모드";
+        debugCheckBox.TextSize = 14;
+        debugCheckBox.SetTextColor(Color.White);
+        debugCheckBox.SetBackgroundColor(Color.Argb(120, 0, 0, 0));
+
+        debugCheckBox.Checked = DB.Load("debugMode") == "true";
+
+        debugCheckBox.CheckedChange += (sender, e) =>
+        {
+            DB.Save("debugMode", e.IsChecked ? "true" : "false");
+        };
+
+        FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(
+            Dp(150),
+            Dp(48)
+        );
+
+        layoutParams.Gravity = GravityFlags.Bottom | GravityFlags.Right;
+        layoutParams.BottomMargin = Dp(12);
+        layoutParams.RightMargin = Dp(12);
+
+        AddContentView(debugCheckBox, layoutParams);
+    }
+
+    private void Lv_KeyPress(object sender, View.KeyEventArgs e)
+    {
+        if (e.Event.Action == KeyEventActions.Down)
 		{
 			if (e.KeyCode == Keycode.Back)
 			{
