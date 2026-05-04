@@ -140,9 +140,80 @@ public class MainActivity : Activity
         SetContentView(global::EraAndroid64.Resource.Layout.main); GameData.MainActivity = this;
         GameData.FrontEnd = FindViewById<EmueraFrontEnd>(global::EraAndroid64.Resource.Id.emueraConsole);
         GameData.ScrollView = FindViewById<ScrollView>(global::EraAndroid64.Resource.Id.emueraScrollView);
+
+        // 디버그 버튼 추가 (UI 위에 띄움)
+        AddDebugButton();
     }
 
-	protected override void OnDestroy()
+    // dp 단위를 실제 픽셀로 변환하는 함수
+    // 다양한 해상도에서 동일한 크기로 표시되도록 하기 위함
+    private int Dp(float value)
+    {
+        return (int)TypedValue.ApplyDimension(
+            ComplexUnitType.Dip,
+            value,
+            Resources.DisplayMetrics
+        );
+    }
+
+    // 화면 우측 상단에 디버그 버튼을 추가하는 메서드
+    // 게임 입력 처리와 분리되어 있어 기존 로직에 영향을 주지 않는다
+    private void AddDebugButton()
+    {
+        Button debugButton = new Button(this);
+
+        // 버튼에 표시할 텍스트 설정
+        debugButton.Text = "DEBUG";
+        debugButton.TextSize = 10;
+        debugButton.Text = "DEBUG";
+        debugButton.TextSize = 10;
+
+        // 버튼 클릭 시 현재 상태 정보를 표시
+        debugButton.Click += (sender, e) =>
+        {
+            // 현재 메모리 사용량을 MB 단위로 계산한다.
+            long memoryMb = GC.GetTotalMemory(false) / 1024 / 1024;
+
+            // 사용자가 선택한 구상 폴더 경로를 저장소에서 읽어온다.
+            string selectedPath = DB.Load("selectedPath");
+
+            // 앱 버전명을 가져온다.
+            string appVersion = PackageManager
+                .GetPackageInfo(PackageName, 0)
+                .VersionName;
+
+            // 현재 앱 상태 정보를 간단히 표시한다.
+            Toast.MakeText(
+     this,
+     $"Version: {appVersion}\n" +
+     $"Memory: {memoryMb} MB\n" +
+     $"SDK: {Build.VERSION.SdkInt}\n" +
+     $"Path: {selectedPath}\n" +
+     $"Emuera: {GlobalStatic.FrontEnd?.InternalEmueraVer}\n" +
+     $"Log: {FileLog.LogFilePath}",
+     ToastLength.Long
+ ).Show();
+        };
+
+        // 버튼 위치 및 크기 설정
+        FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(
+            Dp(64),   // 너비
+            Dp(32)    // 높이
+        );
+        debugButton.TextSize = 8;
+
+        // 화면 우측 상단에 배치
+        layoutParams.Gravity = GravityFlags.Top | GravityFlags.Right;
+
+        // 여백 설정
+        layoutParams.TopMargin = Dp(8);
+        layoutParams.RightMargin = Dp(8);
+
+        // 현재 화면 위에 버튼을 오버레이로 추가
+        AddContentView(debugButton, layoutParams);
+    }
+
+    protected override void OnDestroy()
 	{
 		GlobalStatic.Console?.Dispose();
 		base.OnDestroy();

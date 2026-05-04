@@ -6,14 +6,26 @@ namespace EmueraFramework;
 
 public static class FileLog
 {
-	private static StreamWriter logWriter;
+    private static StreamWriter logWriter;
 
-	private static string currentTime => DateTime.Now.ToString("yyyy/MM/dd hh:mm.sss");
+    // 현재 로그 파일 경로를 외부에서 확인하기 위한 변수
+    public static string LogFilePath { get; private set; }
+
+    private static string currentTime => DateTime.Now.ToString("yyyy/MM/dd hh:mm.sss");
 
 	public static void Init(string eraPath)
 	{
-		logWriter = new StreamWriter(new FileStream(eraPath + "/AndroidLog.txt", File.Exists(eraPath + "/AndroidLog.txt") ? FileMode.Append : FileMode.Create, FileAccess.Write, FileShare.ReadWrite));
-	}
+        // 로그 파일 경로 생성
+        LogFilePath = eraPath + "/AndroidLog.txt";
+
+        // 파일 스트림 생성
+        logWriter = new StreamWriter(new FileStream(
+            LogFilePath,
+            File.Exists(LogFilePath) ? FileMode.Append : FileMode.Create,
+            FileAccess.Write,
+            FileShare.ReadWrite
+        ));
+    }
 
 	public static void Debug(string tag, string msg)
 	{
