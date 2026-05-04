@@ -134,10 +134,25 @@ public class MainActivity : Activity
 		});
 	}
 
-	protected override void OnCreate(Bundle bundle)
-	{
-		RunSetFontSizeActivity();
-		base.OnCreate(bundle);
+    protected override void OnCreate(Bundle bundle)
+    {
+        // 앱 전체에서 처리되지 않은 예외를 로그로 남긴다.
+        // 일반 catch에서 잡히지 않는 크래시 원인 추적용이다.
+        AppDomain.CurrentDomain.UnhandledException += (sender, e) =>
+        {
+            FileLog.Error("UnhandledException", e.ExceptionObject.ToString());
+        };
+
+        // 비동기 Task 내부에서 발생한 예외를 로그로 남긴다.
+        // 초기화나 백그라운드 작업 중 발생하는 예외 추적용이다.
+        TaskScheduler.UnobservedTaskException += (sender, e) =>
+        {
+            FileLog.Error("UnobservedTaskException", e.Exception.ToString());
+            e.SetObserved();
+        };
+
+        RunSetFontSizeActivity();
+        base.OnCreate(bundle);
         if (Build.VERSION.SdkInt >= BuildVersionCodes.M)
         {
             RequestPermissions(new[]
@@ -172,11 +187,15 @@ public class MainActivity : Activity
     {
         Button debugButton = new Button(this);
 
-        // 버튼에 표시할 텍스트 설정
+        // 버튼 텍스트
         debugButton.Text = "DEBUG";
-        debugButton.TextSize = 10;
-        debugButton.Text = "DEBUG";
-        debugButton.TextSize = 10;
+
+        // 글자 색상 (흰색)
+
+        debugButton.SetTextColor(Android.Graphics.Color.White);
+
+        // 배경 투명
+        debugButton.SetBackgroundColor(Android.Graphics.Color.Transparent);
 
         // 버튼 클릭 시 현재 상태 정보를 표시
         debugButton.Click += (sender, e) =>

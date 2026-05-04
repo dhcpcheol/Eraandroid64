@@ -71,6 +71,7 @@ public static class FileLog
     {
         Log.Error(tag, msg);
 
+        // 로그 파일이 아직 초기화되지 않은 상태에서도 앱이 종료되는 현상을 방지
         if (logWriter == null)
         {
             return;
