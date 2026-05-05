@@ -64,7 +64,12 @@ public class MainActivity : Activity
 
                     DB.Save("selectedUri", selectedUri);
 
+                    // SAF 폴더 선택이 끝난 뒤에는 복사 진행 중에도 메인 화면이 보이도록 한다.
+                    // 이 시점에 main.xml을 로드해야 "메모리 초기화중" 화면이 복사 중에도 표시된다.
+                    EnsureMainLayoutLoaded();
+
                     Toast.MakeText(this, "SAF 폴더 선택 완료. 구상 폴더를 복사합니다.", ToastLength.Long).Show();
+
                     FileLog.Info("SAF", "Copy Start: " + selectedUri);
 
                     Task.Run(() =>
