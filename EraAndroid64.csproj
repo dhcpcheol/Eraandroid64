@@ -1,20 +1,22 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net9.0-android</TargetFramework>
-    <SupportedOSPlatformVersion>21</SupportedOSPlatformVersion>
+    <SupportedOSPlatformVersion>23</SupportedOSPlatformVersion>
     <OutputType>Exe</OutputType>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <ApplicationId>com.dhcpcheol.EraAndroid64</ApplicationId>
-    <ApplicationVersion>6</ApplicationVersion>
-	  <ApplicationDisplayVersion>1.6-beta.2</ApplicationDisplayVersion>
+	  <ApplicationVersion>6</ApplicationVersion>
+	  <ApplicationDisplayVersion>1.6-beta.3</ApplicationDisplayVersion>
+	  <TargetSdkVersion>34</TargetSdkVersion>
+
 	  <!--
-      Enables trim analyzers and full trimming during Release mode.
-      To learn more, see: https://learn.microsoft.com/dotnet/core/deploying/trimming/trimming-options#trimming-granularity
-    -->
-	  <TargetSdkVersion>24</TargetSdkVersion>
+  Enables trim analyzers and full trimming during Release mode.
+  To learn more, see: https://learn.microsoft.com/dotnet/core/deploying/trimming/trimming-options#trimming-granularity
+-->
 	  <TrimMode>link</TrimMode>
   </PropertyGroup>
+
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <AndroidPackageFormat>apk</AndroidPackageFormat>
   </PropertyGroup>
@@ -88,5 +90,8 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Xamarin.AndroidX.DocumentFile" Version="1.1.0.3" />
   </ItemGroup>
 </Project>

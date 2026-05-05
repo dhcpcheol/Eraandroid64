@@ -1418,15 +1418,15 @@ public sealed class EmueraConsole : IDisposable
 		{
 			searchOption = SearchOption.TopDirectoryOnly;
 		}
-		string[] files = Directory.GetFiles(erbPath, "*.ERB", searchOption);
-		for (int i = 0; i < files.Length; i++)
-		{
-			if (System.IO.Path.GetExtension(files[i]).ToUpper() == ".ERB")
-			{
-				list.Add(files[i]);
-			}
-		}
-		bool flag = false;
+        string[] files = Directory.GetFiles(erbPath, "*.ERB", searchOption);
+        for (int i = 0; i < files.Length; i++)
+        {
+            if (System.IO.Path.GetExtension(files[i]).ToUpper() == ".ERB")
+            {
+                list.Add(files[i]);
+            }
+        }
+        bool flag = false;
 		if (redraw == ConsoleRedraw.None)
 		{
 			flag = true;
@@ -1448,9 +1448,10 @@ public sealed class EmueraConsole : IDisposable
 		}
 	}
 
-	public void Dispose()
-	{
-		if (timer != null)
+
+    public void Dispose()
+    {
+        if (timer != null)
 		{
 			timer.Dispose();
 		}

@@ -1,6 +1,7 @@
+using Android.Util;
+using EraAndroid;
 using System;
 using System.IO;
-using Android.Util;
 
 namespace EmueraFramework;
 
@@ -15,10 +16,12 @@ public static class FileLog
 
     public static void Init(string eraPath)
     {
-        // 로그 파일 경로 설정
-        LogFilePath = eraPath + "/AndroidLog.txt";
+        // targetSdkVersion 34에서는 일반 외부 저장소 경로에 직접 쓰기가 제한된다.
+        // 로그는 앱 전용 외부 저장소에 저장하여 권한 문제를 피한다. 차후 SAF 채택시 변경
+        string logDir = GameData.MainActivity.GetExternalFilesDir(null).AbsolutePath;
 
-        // 로그 파일 생성 또는 이어쓰기
+        LogFilePath = Path.Combine(logDir, "AndroidLog.txt");
+
         logWriter = new StreamWriter(new FileStream(
             LogFilePath,
             File.Exists(LogFilePath) ? FileMode.Append : FileMode.Create,

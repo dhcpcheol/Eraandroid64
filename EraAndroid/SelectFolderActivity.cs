@@ -1,10 +1,12 @@
 using System;
 using System.IO;
 using Android.App;
+using Android.Content;
 using Android.Content.PM;
 using Android.OS;
 using Android.Views;
 using Android.Widget;
+using Java.Lang;
 using Android.Graphics;
 
 namespace EraAndroid;
@@ -12,43 +14,37 @@ namespace EraAndroid;
 [Activity(Label = "길게 눌러서 Emuera 폴더를 선택해주세요")]
 public class SelectFolderActivity : Activity
 {
-	private ListView lv;
+    // 뒤로가기를 두 번 눌렀는지 판단하기 위한 플래그이다.
+    private bool pressBackKey;
 
-	private string preSelected = "";
+    private const int RequestOpenDocumentTree = 1001;
+
+    private ListView lv;
+
+    private string preSelected = "";
 
 	private readonly string GotoParent = "..";
 
 	private TextView tempTV;
 
-	protected override void OnCreate(Bundle savedInstanceState)
-	{
-		base.OnCreate(savedInstanceState);
-		RequestedOrientation = ScreenOrientation.Portrait;
-        SetContentView(global::EraAndroid64.Resource.Layout.selectfolder); tempTV = new TextView(this);
-        lv = FindViewById<ListView>(global::EraAndroid64.Resource.Id.selectFolderLV); lv.ItemClick += ItemClick;
-		lv.ItemLongClick += ItemLongClick;
-		lv.KeyPress += Lv_KeyPress;
-        preSelected = DB.Load("selectedPath");
+    protected override void OnCreate(Bundle savedInstanceState)
+    {
+        base.OnCreate(savedInstanceState);
+        RequestedOrientation = ScreenOrientation.Portrait;
 
-        preSelected = DB.Load("selectedPath");
+        SetContentView(global::EraAndroid64.Resource.Layout.selectfolder);
 
-        // 경로 선택 화면에서 디버그 모드를 켜고 끌 수 있도록 체크박스를 추가한다.
+        lv = FindViewById<ListView>(global::EraAndroid64.Resource.Id.selectFolderLV);
+        lv.ItemClick += ItemClick;
+
+		// 디버그 모드를 활성화, 비활성화 할 수 있도록 체크박스를 추가한다
         AddDebugModeCheckBox();
 
-        if (string.IsNullOrEmpty(preSelected) || !Directory.Exists(preSelected))
-        {
-            string[] candidates =
-            {
-        Android.OS.Environment.ExternalStorageDirectory.AbsolutePath,
-        "/storage/emulated/150",
-        "/storage/emulated/0"
-    };
+        ArrayAdapter<string> arrayAdapter = new ArrayAdapter<string>(this, 17367043);
+        lv.Adapter = arrayAdapter;
 
-            preSelected = candidates.FirstOrDefault(Directory.Exists)
-                ?? Android.OS.Environment.ExternalStorageDirectory.AbsolutePath;
-        }
-
-        UpdateDirectories(preSelected);
+        arrayAdapter.Add("SAF로 Emuera 폴더 선택");
+        arrayAdapter.Add("선택 후 앱 전용 폴더로 복사하여 실행합니다.");
     }
 
     // dp 단위를 실제 픽셀로 변환한다.
@@ -115,32 +111,51 @@ public class SelectFolderActivity : Activity
 		Finish();
 	}
 
-	private void ItemClick(object sender, AdapterView.ItemClickEventArgs e)
-	{
-		if (e.Position == 0)
-		{
-			try
-			{
-				preSelected = Directory.GetParent(preSelected).FullName;
-			}
-			catch (UnauthorizedAccessException)
-			{
-				return;
-			}
-			catch (Exception ex2)
-			{
-				Toast.MakeText(this, ex2.Message, ToastLength.Long).Show();
-				return;
-			}
-		}
-		else
-		{
-			preSelected = (string)lv.Adapter.GetItem(e.Position);
-		}
-		UpdateDirectories(preSelected);
-	}
+    private void ItemClick(object sender, AdapterView.ItemClickEventArgs e)
+    {
+        OpenDocumentTree();
+    }
 
-	private void UpdateDirectories(string root)
+    // Android 저장소 접근 정책에 맞추어 SAF 폴더 선택 화면을 연다.
+    private void OpenDocumentTree()
+    {
+        Intent intent = new Intent(Intent.ActionOpenDocumentTree);
+
+        intent.AddFlags(ActivityFlags.GrantReadUriPermission);
+        intent.AddFlags(ActivityFlags.GrantWriteUriPermission);
+        intent.AddFlags(ActivityFlags.GrantPersistableUriPermission);
+        intent.AddFlags(ActivityFlags.GrantPrefixUriPermission);
+
+        StartActivityForResult(intent, RequestOpenDocumentTree);
+    }
+
+    // 선택한 폴더 URI를 저장하고 MainActivity로 전달한다.
+    protected override void OnActivityResult(int requestCode, Result resultCode, Intent data)
+    {
+        base.OnActivityResult(requestCode, resultCode, data);
+
+        if (requestCode != RequestOpenDocumentTree || resultCode != Result.Ok || data?.Data == null)
+        {
+            return;
+        }
+
+        Android.Net.Uri selectedUri = data.Data;
+
+        ContentResolver.TakePersistableUriPermission(
+            selectedUri,
+            ActivityFlags.GrantReadUriPermission | ActivityFlags.GrantWriteUriPermission
+        );
+
+        string selectedUriText = selectedUri.ToString();
+
+        DB.Save("selectedUri", selectedUriText);
+
+        Intent.PutExtra("Selected Uri", selectedUriText);
+        SetResult(Result.Ok, Intent);
+        Finish();
+    }
+
+    private void UpdateDirectories(string root)
 	{
 		if (!Directory.Exists(root))
 		{
@@ -160,9 +175,24 @@ public class SelectFolderActivity : Activity
 		catch (UnauthorizedAccessException)
 		{
 		}
-		catch (Exception ex2)
-		{
-			Toast.MakeText(this, ex2.Message, ToastLength.Long);
-		}
-	}
+        catch (System.Exception ex2)
+        {
+            Toast.MakeText(this, ex2.Message, ToastLength.Long).Show();
+        }
+    }
+    public override void OnBackPressed()
+    {
+        if (pressBackKey)
+        {
+            // 두 번째 뒤로가기에서 앱을 완전히 종료한다.
+            FinishAffinity();
+            Java.Lang.JavaSystem.Exit(0);
+            return;
+        }
+
+        // 첫 번째 뒤로가기에서는 종료하지 않고 사용자에게 한 번 더 눌러야 함을 안내한다.
+        Toast.MakeText(this, "한번 더 누르면 종료됩니다", ToastLength.Short).Show();
+        pressBackKey = true;
+    }
 }
+
