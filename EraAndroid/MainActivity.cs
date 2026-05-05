@@ -15,6 +15,9 @@ using MinorShift.Emuera;
 using Config = MinorShift.Emuera.Config;
 using System.Linq;
 using AndroidX.DocumentFile.Provider;
+using System.Collections.Generic;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace EraAndroid;
 
@@ -33,6 +36,12 @@ public class MainActivity : Activity
     private bool mainLayoutLoaded;
 
     private bool pressBackKey;
+
+    // 파일 확인, 파일 복사, 초기화 상태를 화면에 표시하기 위한 텍스트이다.
+    private TextView loadingStatusTextView;
+
+    // SAF 전체 복사 중 복사한 파일 수를 기록한다.
+    private int startupCopiedFileCount;
 
     public bool EmueraInitializing { get; private set; } = true;
 
@@ -65,9 +74,13 @@ public class MainActivity : Activity
                     DB.Save("selectedUri", selectedUri);
 
                     // SAF 폴더 선택이 끝난 뒤에는 복사 진행 중에도 메인 화면이 보이도록 한다.
-                    // 이 시점에 main.xml을 로드해야 "메모리 초기화중" 화면이 복사 중에도 표시된다.
+                    // 이 시점에 main.xml을 로드해야 복사 및 초기화 상태를 화면에 표시할 수 있다.
                     EnsureMainLayoutLoaded();
 
+                    // 복사와 초기화 상태를 화면에 표시할 수 있도록 콜백을 먼저 연결한다.
+                    EraAndroidFileProvider.StatusCallback = ShowLoadingStatus;
+
+                    ShowLoadingStatus("구상 폴더 복사를 준비합니다.");
                     Toast.MakeText(this, "SAF 폴더 선택 완료. 구상 폴더를 복사합니다.", ToastLength.Long).Show();
 
                     FileLog.Info("SAF", "Copy Start: " + selectedUri);
@@ -93,7 +106,13 @@ public class MainActivity : Activity
 
                                 DB.Save("selectedPath", copiedPath);
 
+                                // 필요한 파일만 나중에 SAF 원본에서 가져올 수 있도록 Provider에 현재 경로 정보를 전달한다.
+                                EraAndroidFileProvider.SelectedUri = Android.Net.Uri.Parse(selectedUri);
+                                EraAndroidFileProvider.LocalRootPath = copiedPath;
+                                EraAndroidFileProvider.AppContext = this;
+
                                 Toast.MakeText(this, "구상 폴더 복사 완료. 초기화를 시작합니다.", ToastLength.Long).Show();
+                                ShowLoadingStatus("구상 초기화 준비 중입니다.");
 
                                 Initialize(copiedPath);
                             });
@@ -205,6 +224,8 @@ public class MainActivity : Activity
         Directory.CreateDirectory(copiedPath);
 
         // SAF로 선택된 폴더의 전체 구조를 재귀적으로 복사한다.
+        startupCopiedFileCount = 0;
+        ShowLoadingStatus("구상 폴더 복사 중입니다.");
         FileLog.Info("SAF", "구상 폴더 전체 복사 시작: " + copiedPath);
 
         CopyDocumentTreeRecursive(rootDocument, copiedPath);
@@ -240,9 +261,47 @@ public class MainActivity : Activity
             }
             else if (document.IsFile)
             {
-                CopyDocumentFile(document, targetPath);
+                // 초기 실행에 필요한 파일만 먼저 복사한다.
+                // 이미지, 사운드, 동영상 등은 실제로 요청될 때 EraAndroidFileProvider에서 가져오도록 한다.
+                if (ShouldCopyAtStartup(targetPath))
+                {
+                    CopyDocumentFile(document, targetPath);
+                }
             }
         }
+    }
+
+    private bool ShouldCopyAtStartup(string targetPath)
+    {
+        string extension = Path.GetExtension(targetPath).ToUpperInvariant();
+
+        // Emuera 초기화와 스크립트 파싱에 필요한 텍스트 계열 파일이다.
+        if (extension == ".ERB")
+        {
+            return true;
+        }
+
+        if (extension == ".CSV")
+        {
+            return true;
+        }
+
+        if (extension == ".ERH")
+        {
+            return true;
+        }
+
+        if (extension == ".CONFIG")
+        {
+            return true;
+        }
+
+        if (extension == ".TXT")
+        {
+            return true;
+        }
+
+        return false;
     }
 
     private void CopyDocumentFile(DocumentFile sourceFile, string targetPath)
@@ -252,6 +311,13 @@ public class MainActivity : Activity
         using FileStream outputStream = new FileStream(targetPath, FileMode.Create, FileAccess.Write);
 
         inputStream.CopyTo(outputStream);
+
+        startupCopiedFileCount++;
+
+        if (startupCopiedFileCount == 1 || startupCopiedFileCount % 25 == 0)
+        {
+            ShowLoadingStatus("구상 파일 복사 중: " + startupCopiedFileCount + "개 복사");
+        }
     }
 
     private string GetSafeFileName(string fileName)
@@ -310,6 +376,58 @@ public class MainActivity : Activity
         OverridePendingTransition(0, 0);
     }
 
+    private void ShowLoadingStatus(string message)
+    {
+        RunOnUiThread(() =>
+        {
+            FileLog.Info("LoadingStatus", message);
+
+            if (loadingStatusTextView == null)
+            {
+                loadingStatusTextView = new TextView(this);
+                loadingStatusTextView.TextSize = 16;
+                loadingStatusTextView.SetTextColor(Android.Graphics.Color.White);
+                loadingStatusTextView.SetBackgroundColor(Android.Graphics.Color.Argb(220, 0, 0, 0));
+                loadingStatusTextView.Gravity = GravityFlags.Center;
+                loadingStatusTextView.SetPadding(Dp(12), Dp(8), Dp(12), Dp(8));
+
+                FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(
+                    FrameLayout.LayoutParams.MatchParent,
+                    Dp(96)
+                );
+
+                layoutParams.Gravity = GravityFlags.Bottom;
+
+                AddContentView(loadingStatusTextView, layoutParams);
+            }
+
+            loadingStatusTextView.Text = message;
+            loadingStatusTextView.Visibility = ViewStates.Visible;
+
+            // 화면 위에 상태 표시창이 보이도록 맨 앞으로 올린다.
+            loadingStatusTextView.BringToFront();
+
+            if (Build.VERSION.SdkInt >= BuildVersionCodes.Lollipop)
+            {
+                loadingStatusTextView.Elevation = Dp(100);
+            }
+
+            loadingStatusTextView.Invalidate();
+            Window.DecorView.Invalidate();
+        });
+    }
+
+    private void HideLoadingStatus()
+    {
+        RunOnUiThread(() =>
+        {
+            if (loadingStatusTextView != null)
+            {
+                loadingStatusTextView.Visibility = ViewStates.Gone;
+            }
+        });
+    }
+
     private void EnsureMainLayoutLoaded()
     {
         // 구상 실행 직전에만 실제 메인 화면 레이아웃을 로드한다.
@@ -365,6 +483,9 @@ public class MainActivity : Activity
         // Program.Main 실행 전에 저장된 폰트 설정을 먼저 적용한다.
         ApplySavedFontConfig();
 
+        // 초기화 상태 표시창이 정상적으로 표시되는지 확인하기 위한 문구이다.
+        ShowLoadingStatus("구상 파일 읽기 준비 중입니다.");
+
         MinorShift.Emuera.Program.Main(this, GameData.FrontEnd, eraPath);
 
         // Program.Main 내부에서 Config 값이 다시 변경될 수 있으므로 실행 후에도 다시 적용한다.
@@ -391,6 +512,8 @@ public class MainActivity : Activity
             if (!task.IsFaulted)
             {
                 FileLog.Info("Initialize", "Completed. Memory: " + (GC.GetTotalMemory(false) / 1024 / 1024) + " MB");
+
+                HideLoadingStatus();
 
                 EmueraInitializing = false;
                 GameData.FrontEnd.Handler.Post(GameData.FrontEnd.RequestLayout);
@@ -508,12 +631,45 @@ public class MainActivity : Activity
                 // 로그 파일이 있으면 내용을 읽어온다.
                 if (File.Exists(FileLog.LogFilePath))
                 {
-                    logText = File.ReadAllText(FileLog.LogFilePath);
+                    string fullLogText = File.ReadAllText(FileLog.LogFilePath);
 
-                    // 로그가 너무 길면 공유 앱이 멈출 수 있으므로 마지막 20000자만 공유한다.
-                    if (logText.Length > 20000)
+                    // 공유 인텐트에 너무 큰 텍스트를 넣으면 공유 창이 뜨지 않을 수 있으므로,
+                    // SAF 복사와 초기화 확인에 필요한 로그만 추출한다.
+                    string[] logLines = fullLogText.Split(new[]
                     {
-                        logText = logText.Substring(logText.Length - 20000);
+                        "\r\n",
+                        "\n"
+                    }, StringSplitOptions.None);
+
+                    List<string> filteredLogLines = new List<string>();
+
+                    foreach (string logLine in logLines)
+                    {
+                        if (logLine.Contains("SAF") ||
+                            logLine.Contains("복사한 파일 수") ||
+                            logLine.Contains("건너뛴 파일 수") ||
+                            logLine.Contains("Initialize") ||
+                            logLine.Contains("ReadFile") ||
+                            logLine.Contains("ERB Load") ||
+                            logLine.Contains("LoadingStatus") ||
+                            logLine.Contains("Font") ||
+                            logLine.Contains("DebugInfo"))
+                        {
+                            filteredLogLines.Add(logLine);
+                        }
+                    }
+
+                    logText = string.Join("\n", filteredLogLines);
+
+                    // 그래도 로그가 너무 길면 마지막 50000자만 공유한다.
+                    if (logText.Length > 50000)
+                    {
+                        logText = logText.Substring(logText.Length - 50000);
+                    }
+
+                    if (string.IsNullOrEmpty(logText))
+                    {
+                        logText = "필터링된 로그가 없습니다.";
                     }
                 }
                 else

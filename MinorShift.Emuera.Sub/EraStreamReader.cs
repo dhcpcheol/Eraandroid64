@@ -37,26 +37,32 @@ internal sealed class EraStreamReader : IDisposable
 		return Open(path, Path.GetFileName(path));
 	}
 
-	public bool Open(string path, string name)
-	{
-		filepath = path;
-		filename = name;
-		nextNo = 0;
-		curNo = 0;
-		try
-		{
-			stream = new FileStream(filepath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
-			reader = new StreamReader(stream, Config.Encode);
-		}
-		catch
-		{
-			Dispose();
-			return false;
-		}
-		return true;
-	}
+    public bool Open(string path, string name)
+    {
+        filepath = path;
+        filename = name;
+        nextNo = 0;
+        curNo = 0;
+        try
+        {
+            // 현재 읽는 파일명을 화면에 표시한다.
+            EraAndroid.EraAndroidFileProvider.ReportStatus("파일 읽기 중: " + filename);
 
-	public string ReadLine()
+            // 파일이 앱 내부 복사 폴더에 없으면, 필요한 파일만 SAF 원본에서 가져온다.
+            EraAndroid.EraAndroidFileProvider.EnsureFileExists(filepath);
+
+            stream = new FileStream(filepath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+            reader = new StreamReader(stream, Config.Encode);
+        }
+        catch
+        {
+            Dispose();
+            return false;
+        }
+        return true;
+    }
+
+    public string ReadLine()
 	{
 		nextNo++;
 		curNo = nextNo;

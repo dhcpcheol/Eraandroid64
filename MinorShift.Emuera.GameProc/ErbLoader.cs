@@ -210,17 +210,22 @@ internal sealed class ErbLoader
 		try
 		{
 			labelDic.RemoveAll();
-			for (int i = 0; i < files.Count; i++)
-			{
-				string key = files[i].Key;
-				string value = files[i].Value;
-				if (displayReport)
-				{
-					output.PrintSystemLine(key + "読み込み中・・・");
-				}
-				loadErb(value, key, list);
-			}
-			ParserMediator.FlushWarningList();
+            for (int i = 0; i < files.Count; i++)
+            {
+                string key = files[i].Key;
+                string value = files[i].Value;
+
+                // 현재 ERB 파일 읽기 진행 상황을 Android 화면과 로그에 표시한다.
+                EraAndroid.EraAndroidFileProvider.ReportStatus("ERB 읽기 중: " + (i + 1) + " / " + files.Count + "\n" + key);
+                FileLog.Info("ERB Load", "ERB 읽기 중: " + (i + 1) + " / " + files.Count + " / " + key);
+
+                if (displayReport)
+                {
+                    output.PrintSystemLine(key + "読み込み中・・・");
+                }
+                loadErb(value, key, list);
+            }
+            ParserMediator.FlushWarningList();
 			if (displayReport)
 			{
 				output.PrintSystemLine("ユーザー定義関数のリストを構築中・・・");
