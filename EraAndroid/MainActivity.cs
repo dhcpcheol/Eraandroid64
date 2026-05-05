@@ -89,6 +89,12 @@ public class MainActivity : Activity
         // 구상 초기화 시작 지점을 기록한다.
         FileLog.Info("Initialize", "Start: " + eraPath);
 
+        // 경로 선택 화면에서 저장된 최신 디버그 모드 값을 기준으로 버튼을 표시한다.
+        if (DB.Load("debugMode") == "true")
+        {
+            AddDebugButton();
+        }
+
         inputEditText = FindViewById<EditText>(global::EraAndroid64.Resource.Id.inputEditText);
         inputEditText.KeyPress += InputEditText_KeyPress;
 		GameData.InputText = inputEditText;
@@ -165,12 +171,6 @@ public class MainActivity : Activity
         SetContentView(global::EraAndroid64.Resource.Layout.main); GameData.MainActivity = this;
         GameData.FrontEnd = FindViewById<EmueraFrontEnd>(global::EraAndroid64.Resource.Id.emueraConsole);
         GameData.ScrollView = FindViewById<ScrollView>(global::EraAndroid64.Resource.Id.emueraScrollView);
-
-        // 디버그 모드가 켜져 있을 때만 게임 화면에 DEBUG 버튼을 표시한다.
-        if (DB.Load("debugMode") == "true")
-        {
-            AddDebugButton();
-        }
     }
 
     // dp 단위를 실제 픽셀로 변환하는 함수
