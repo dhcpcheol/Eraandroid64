@@ -43,6 +43,10 @@ public class MainActivity : Activity
     // SAF 전체 복사 중 복사한 파일 수를 기록한다.
     private int startupCopiedFileCount;
 
+    // 로딩 상태 UI가 마지막으로 갱신된 시간을 기록한다.
+    // 파일을 하나 읽을 때마다 화면과 로그를 갱신하면 초기화 속도가 느려질 수 있으므로 갱신 빈도를 제한한다.
+    private long lastLoadingStatusUpdateTime;
+
     public bool EmueraInitializing { get; private set; } = true;
 
     public void Close()
@@ -80,54 +84,27 @@ public class MainActivity : Activity
                     // 복사와 초기화 상태를 화면에 표시할 수 있도록 콜백을 먼저 연결한다.
                     EraAndroidFileProvider.StatusCallback = ShowLoadingStatus;
 
-                    ShowLoadingStatus("구상 폴더 복사를 준비합니다.");
-                    Toast.MakeText(this, "SAF 폴더 선택 완료. 구상 폴더를 복사합니다.", ToastLength.Long).Show();
+                    string copiedPathCandidate = GetCopiedPathFromSelectedUri(selectedUri);
 
-                    FileLog.Info("SAF", "Copy Start: " + selectedUri);
-
-                    Task.Run(() =>
+                    if (IsValidCopiedFolder(copiedPathCandidate))
                     {
-                        try
-                        {
-                            // SAF URI는 기존 엔진에서 직접 읽을 수 없으므로 앱 전용 폴더로 복사한 뒤 실행한다.
-                            // 이미 정상 캐시가 있으면 기존 복사본을 재사용하여 실행 속도를 높인다.
-                            string copiedPath = CopySelectedTreeToAppFolder(selectedUri, false);
-
-                            FileLog.Info("SAF", "Copied Path: " + copiedPath);
-
-                            RunOnUiThread(() =>
+                        new AlertDialog.Builder(this)
+                            .SetTitle("기존 구상 복사본 발견")
+                            .SetMessage("기존에 복사된 구상 폴더가 있습니다.\n\n기존 복사본을 사용하면 빠르게 실행할 수 있습니다.\n구상 파일을 수정했다면 다시 불러오기를 선택하세요.")
+                            .SetPositiveButton("기존 복사본 사용", (sender, args) =>
                             {
-                                if (string.IsNullOrEmpty(copiedPath) || !Directory.Exists(copiedPath))
-                                {
-                                    Toast.MakeText(this, "구상 폴더 복사에 실패했습니다.", ToastLength.Long).Show();
-                                    RunSelectFolderActivity();
-                                    return;
-                                }
-
-                                DB.Save("selectedPath", copiedPath);
-
-                                // 필요한 파일만 나중에 SAF 원본에서 가져올 수 있도록 Provider에 현재 경로 정보를 전달한다.
-                                EraAndroidFileProvider.SelectedUri = Android.Net.Uri.Parse(selectedUri);
-                                EraAndroidFileProvider.LocalRootPath = copiedPath;
-                                EraAndroidFileProvider.AppContext = this;
-
-                                Toast.MakeText(this, "구상 폴더 복사 완료. 초기화를 시작합니다.", ToastLength.Long).Show();
-                                ShowLoadingStatus("구상 초기화 준비 중입니다.");
-
-                                Initialize(copiedPath);
-                            });
-                        }
-                        catch (System.Exception ex)
-                        {
-                            FileLog.Error("SAF Copy Error", ex.ToString());
-
-                            RunOnUiThread(() =>
+                                StartCopyAndInitialize(selectedUri, false);
+                            })
+                            .SetNegativeButton("다시 불러오기", (sender, args) =>
                             {
-                                Toast.MakeText(this, "구상 폴더 복사 중 오류가 발생했습니다: " + ex.Message, ToastLength.Long).Show();
-                                RunSelectFolderActivity();
-                            });
-                        }
-                    });
+                                StartCopyAndInitialize(selectedUri, true);
+                            })
+                            .Show();
+
+                        return;
+                    }
+
+                    StartCopyAndInitialize(selectedUri, false);
                 }
                 else
                 {
@@ -160,14 +137,96 @@ public class MainActivity : Activity
         }
     }
 
+    private string GetCopiedPathFromSelectedUri(string selectedUri)
+    {
+        // SAF URI 문자열을 기준으로 기존 복사 폴더 경로를 계산한다.
+        string appRootPath = GetExternalFilesDir(null).AbsolutePath;
+        string cacheFolderName = GetStableCacheFolderName(selectedUri);
+
+        return Path.Combine(appRootPath, cacheFolderName);
+    }
+
+    private bool IsValidCopiedFolder(string copiedPath)
+    {
+        // 기존 복사 폴더가 정상 구상 폴더인지 확인한다.
+        if (string.IsNullOrEmpty(copiedPath))
+        {
+            return false;
+        }
+
+        if (!Directory.Exists(copiedPath))
+        {
+            return false;
+        }
+
+        bool csvExists = Directory.Exists(Path.Combine(copiedPath, "CSV"));
+        bool erbExists = Directory.GetFiles(copiedPath, "*.ERB", SearchOption.AllDirectories).Length > 0;
+
+        return csvExists && erbExists;
+    }
+
+    private void StartCopyAndInitialize(string selectedUri, bool forceRecopy)
+    {
+        ShowLoadingStatus("구상 폴더 복사를 준비합니다.");
+        Toast.MakeText(this, "SAF 폴더 선택 완료. 구상 폴더를 복사합니다.", ToastLength.Long).Show();
+
+        FileLog.Info("SAF", "Copy Start: " + selectedUri);
+        FileLog.Info("SAF", "Force Recopy: " + forceRecopy);
+
+        Task.Run(() =>
+        {
+            try
+            {
+                // SAF URI는 기존 엔진에서 직접 읽을 수 없으므로 앱 전용 폴더로 복사한 뒤 실행한다.
+                // forceRecopy가 false이면 정상 캐시가 있을 때 기존 복사본을 재사용한다.
+                // forceRecopy가 true이면 기존 복사본을 삭제하고 SAF 원본에서 다시 복사한다.
+                string copiedPath = CopySelectedTreeToAppFolder(selectedUri, forceRecopy);
+
+                FileLog.Info("SAF", "Copied Path: " + copiedPath);
+
+                RunOnUiThread(() =>
+                {
+                    if (string.IsNullOrEmpty(copiedPath) || !Directory.Exists(copiedPath))
+                    {
+                        Toast.MakeText(this, "구상 폴더 복사에 실패했습니다.", ToastLength.Long).Show();
+                        RunSelectFolderActivity();
+                        return;
+                    }
+
+                    DB.Save("selectedPath", copiedPath);
+
+                    // 필요한 파일만 나중에 SAF 원본에서 가져올 수 있도록 Provider에 현재 경로 정보를 전달한다.
+                    EraAndroidFileProvider.SelectedUri = Android.Net.Uri.Parse(selectedUri);
+                    EraAndroidFileProvider.LocalRootPath = copiedPath;
+                    EraAndroidFileProvider.AppContext = this;
+
+                    Toast.MakeText(this, "구상 폴더 복사 완료. 초기화를 시작합니다.", ToastLength.Long).Show();
+                    ShowLoadingStatus("구상 초기화 준비 중입니다.");
+
+                    Initialize(copiedPath);
+                });
+            }
+            catch (System.Exception ex)
+            {
+                FileLog.Error("SAF Copy Error", ex.ToString());
+
+                RunOnUiThread(() =>
+                {
+                    Toast.MakeText(this, "구상 폴더 복사 중 오류가 발생했습니다: " + ex.Message, ToastLength.Long).Show();
+                    RunSelectFolderActivity();
+                });
+            }
+        });
+    }
+
     private string CopySelectedTreeToAppFolder(string selectedUri, bool forceRecopy)
     {
         // SAF로 선택된 폴더를 앱 전용 외부 디렉터리로 복사한다.
         string appRootPath = GetExternalFilesDir(null).AbsolutePath;
 
         // 선택한 SAF URI마다 서로 다른 복사 폴더를 사용한다.
-        // 같은 구상은 같은 캐시 폴더를 사용하고, 다른 구상은 다른 캐시 폴더에 저장한다.
-        string cacheFolderName = "Emuera_" + System.Math.Abs(selectedUri.GetHashCode()).ToString();
+        // GetHashCode는 실행마다 달라질 수 있으므로 안정적인 SHA256 기반 폴더명을 사용한다.
+        string cacheFolderName = GetStableCacheFolderName(selectedUri);
 
         string copiedPath = Path.Combine(appRootPath, cacheFolderName);
 
@@ -308,9 +367,8 @@ public class MainActivity : Activity
     {
         // SAF 파일 스트림을 열어 앱 전용 디렉터리의 실제 파일로 저장한다.
         using Stream inputStream = ContentResolver.OpenInputStream(sourceFile.Uri);
-        using FileStream outputStream = new FileStream(targetPath, FileMode.Create, FileAccess.Write);
-
-        inputStream.CopyTo(outputStream);
+        using FileStream outputStream = new FileStream(targetPath, FileMode.Create, FileAccess.Write, FileShare.None, 1024 * 1024);
+        inputStream.CopyTo(outputStream, 1024 * 1024);
 
         startupCopiedFileCount++;
 
@@ -318,6 +376,24 @@ public class MainActivity : Activity
         {
             ShowLoadingStatus("구상 파일 복사 중: " + startupCopiedFileCount + "개 복사");
         }
+    }
+
+    private string GetStableCacheFolderName(string selectedUri)
+    {
+        // SAF URI 문자열을 기준으로 항상 같은 캐시 폴더명을 생성한다.
+        using SHA256 sha256 = SHA256.Create();
+
+        byte[] inputBytes = Encoding.UTF8.GetBytes(selectedUri);
+        byte[] hashBytes = sha256.ComputeHash(inputBytes);
+
+        System.Text.StringBuilder builder = new System.Text.StringBuilder();
+
+        for (int i = 0; i < 8; i++)
+        {
+            builder.Append(hashBytes[i].ToString("x2"));
+        }
+
+        return "Emuera_" + builder.ToString();
     }
 
     private string GetSafeFileName(string fileName)
@@ -378,6 +454,23 @@ public class MainActivity : Activity
 
     private void ShowLoadingStatus(string message)
     {
+        long currentTime = JavaSystem.CurrentTimeMillis();
+
+        bool importantMessage =
+            message.Contains("준비") ||
+            message.Contains("완료") ||
+            message.Contains("복사 중") ||
+            message.Contains("초기화");
+
+        // 중요한 상태 메시지는 즉시 표시한다.
+        // 그 외의 파일 단위 로딩 메시지는 250ms에 한 번만 표시하여 UI 갱신과 로그 기록 부담을 줄인다.
+        if (!importantMessage && currentTime - lastLoadingStatusUpdateTime < 250)
+        {
+            return;
+        }
+
+        lastLoadingStatusUpdateTime = currentTime;
+
         RunOnUiThread(() =>
         {
             FileLog.Info("LoadingStatus", message);

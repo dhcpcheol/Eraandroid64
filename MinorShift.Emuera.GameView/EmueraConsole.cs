@@ -71,11 +71,15 @@ public sealed class EmueraConsole : IDisposable
 
 	private bool runningERBfromMemory;
 
-	private uint lastUpdate;
+    private uint lastUpdate;
 
-	private uint msPerFrame = 16u;
+    // 초기화 중 화면 갱신이 마지막으로 수행된 시간을 기록한다.
+    // ERB 로딩 중 지나치게 잦은 화면 갱신을 막기 위함이다.
+    private uint lastInitializeRefreshUpdate;
 
-	private ConsoleRedraw redraw = ConsoleRedraw.Normal;
+    private uint msPerFrame = 16u;
+
+    private ConsoleRedraw redraw = ConsoleRedraw.Normal;
 
 	private string debugTitle;
 
@@ -946,42 +950,61 @@ public sealed class EmueraConsole : IDisposable
 		return "EmueraCS";
 	}
 
-	public void RefreshStrings(bool force_Paint)
-	{
-		bool flag = true;
-		if (redraw == ConsoleRedraw.None && !force_Paint && !flag)
-		{
-			return;
-		}
-		if (selectingButton != null)
-		{
-			if (state != ConsoleState.Error && state != ConsoleState.WaitInput)
-			{
-				selectingButton = null;
-			}
-			else if (state == ConsoleState.WaitInput && !inputReq.NeedValue)
-			{
-				selectingButton = null;
-			}
-			else if (selectingButton.Generation != lastButtonGeneration)
-			{
-				selectingButton = null;
-			}
-		}
-		if (!force_Paint && ((!flag && lastDrawnLineNo == lineNo && lastSelectingButton == selectingButton) || (WinmmTimer.TickCount - lastUpdate < msPerFrame && (state == ConsoleState.Running || state == ConsoleState.Initializing))))
-		{
-			return;
-		}
+    public void RefreshStrings(bool force_Paint)
+    {
+        bool flag = true;
+
+        // 초기화 중에는 강제 갱신이 아닌 화면 갱신을 250ms에 한 번만 허용한다.
+        // ERB와 CSV를 대량으로 읽는 동안 매번 화면을 다시 그리면 초기화 시간이 길어질 수 있기 때문이다.
+        if (state == ConsoleState.Initializing && !force_Paint)
+        {
+            uint currentTick = WinmmTimer.TickCount;
+
+            if (currentTick - lastInitializeRefreshUpdate < 250u)
+            {
+                return;
+            }
+
+            lastInitializeRefreshUpdate = currentTick;
+        }
+
+        if (redraw == ConsoleRedraw.None && !force_Paint && !flag)
+        {
+            return;
+        }
+
+        if (selectingButton != null)
+        {
+            if (state != ConsoleState.Error && state != ConsoleState.WaitInput)
+            {
+                selectingButton = null;
+            }
+            else if (state == ConsoleState.WaitInput && !inputReq.NeedValue)
+            {
+                selectingButton = null;
+            }
+            else if (selectingButton.Generation != lastButtonGeneration)
+            {
+                selectingButton = null;
+            }
+        }
+
+        if (!force_Paint && ((!flag && lastDrawnLineNo == lineNo && lastSelectingButton == selectingButton) || (WinmmTimer.TickCount - lastUpdate < msPerFrame && (state == ConsoleState.Running || state == ConsoleState.Initializing))))
+        {
+            return;
+        }
+
         if (forceTextBoxColor)
         {
             GlobalStatic.FrontEnd.TextBoxBackColor = bgColor;
             lastBgColorChange = WinmmTimer.TickCount;
         }
-        verticalScrollBarUpdate();
-		GlobalStatic.FrontEnd.Refresh();
-	}
 
-	public void OnPaint(Canvas graph)
+        verticalScrollBarUpdate();
+        GlobalStatic.FrontEnd.Refresh();
+    }
+
+    public void OnPaint(Canvas graph)
 	{
 		if (Enabled)
 		{
