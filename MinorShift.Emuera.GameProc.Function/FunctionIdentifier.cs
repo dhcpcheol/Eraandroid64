@@ -2736,11 +2736,17 @@ internal sealed class FunctionIdentifier
 		addFunction(FunctionCode.TRYCCALL, new CALL_Instruction(form: false, isJump: false, isTry: true, isTryCatch: true), 2);
 		addFunction(FunctionCode.TRYCJUMPFORM, new CALL_Instruction(form: true, isJump: true, isTry: true, isTryCatch: true), 2);
 		addFunction(FunctionCode.TRYCCALLFORM, new CALL_Instruction(form: true, isJump: false, isTry: true, isTryCatch: true), 2);
-		addFunction(FunctionCode.CALLEVENT, new CALLEVENT_Instruction());
-		addFunction(FunctionCode.CALLF, new CALLF_Instruction(form: false));
-		addFunction(FunctionCode.CALLFORMF, new CALLF_Instruction(form: true));
-		addFunction(FunctionCode.RESTART, new RESTART_Instruction());
-		addFunction(FunctionCode.GOTO, new GOTO_Instruction(form: false, isTry: false, isTryCatch: false));
+        addFunction(FunctionCode.CALLEVENT, new CALLEVENT_Instruction());
+        addFunction(FunctionCode.CALLF, new CALLF_Instruction(form: false));
+        addFunction(FunctionCode.CALLFORMF, new CALLF_Instruction(form: true));
+
+        // TW 4.956 일부 구상은 식 중 함수 호출을 실패 허용 형태로 호출한다.
+        // 현재 엔진에는 TRYCALLF 계열이 없으므로 CALLF와 같은 처리로 우선 해석시킨다.
+        addFunction(FunctionCode.TRYCALLF, new CALLF_Instruction(form: false));
+        addFunction(FunctionCode.TRYCALLFORMF, new CALLF_Instruction(form: true));
+
+        addFunction(FunctionCode.RESTART, new RESTART_Instruction());
+        addFunction(FunctionCode.GOTO, new GOTO_Instruction(form: false, isTry: false, isTryCatch: false));
 		addFunction(FunctionCode.TRYGOTO, new GOTO_Instruction(form: false, isTry: true, isTryCatch: false), 2);
 		addFunction(FunctionCode.GOTOFORM, new GOTO_Instruction(form: true, isTry: false, isTryCatch: false), 2);
 		addFunction(FunctionCode.TRYGOTOFORM, new GOTO_Instruction(form: true, isTry: true, isTryCatch: false), 2);
@@ -2780,8 +2786,32 @@ internal sealed class FunctionIdentifier
         addFunction(FunctionCode.ARRAYMSORT, argumentBuilderDictionary[FunctionArgType.FORM_STR_ANY], 6);
         addFunction(FunctionCode.LOADTEXT, argumentBuilderDictionary[FunctionArgType.INT_ANY], 6);
         addFunction(FunctionCode.SAVETEXT, argumentBuilderDictionary[FunctionArgType.FORM_STR_ANY], 6);
-		addFunction(FunctionCode.PRINT_RECT, new PRINT_RECT_Instruction());
-		addFunction(FunctionCode.PRINT_SPACE, new PRINT_SPACE_Instruction());
+
+        // TW 4.956에서 사용하는 최신 Emuera 계열 명령어를 우선 인식시킨다.
+        // 실제 동작 구현은 이후 단계에서 추가한다.
+        addFunction(FunctionCode.REGEXPMATCH, argumentBuilderDictionary[FunctionArgType.FORM_STR_ANY], 6);
+        addFunction(FunctionCode.DT_CREATE, argumentBuilderDictionary[FunctionArgType.FORM_STR_ANY], 6);
+        addFunction(FunctionCode.DT_COLUMN_ADD, argumentBuilderDictionary[FunctionArgType.FORM_STR_ANY], 6);
+        addFunction(FunctionCode.DT_ROW_ADD, argumentBuilderDictionary[FunctionArgType.FORM_STR_ANY], 6);
+        addFunction(FunctionCode.DT_RELEASE, argumentBuilderDictionary[FunctionArgType.FORM_STR_ANY], 6);
+
+        // Android 포팅판에서는 우선 오디오 제어 명령을 인식만 시킨다.
+        // 실제 사운드 재생 기능은 추후 AudioTrack/MediaPlayer 기반으로 별도 구현한다.
+        addFunction(FunctionCode.SETBGMVOLUME, argumentBuilderDictionary[FunctionArgType.INT_EXPRESSION], 6);
+        addFunction(FunctionCode.SETSOUNDVOLUME, argumentBuilderDictionary[FunctionArgType.INT_EXPRESSION], 6);
+        addFunction(FunctionCode.PLAYBGM, argumentBuilderDictionary[FunctionArgType.FORM_STR_ANY], 6);
+        addFunction(FunctionCode.STOPBGM, argumentBuilderDictionary[FunctionArgType.VOID], 6);
+        addFunction(FunctionCode.STOPSOUND, argumentBuilderDictionary[FunctionArgType.VOID], 6);
+
+        // TW 4.956 호환을 위해 우선 해석 가능한 명령으로 등록한다.
+        addFunction(FunctionCode.CLEARMEMORY, argumentBuilderDictionary[FunctionArgType.VOID], 6);
+        // TW 4.956 호환용 AWAIT 명령어이다.
+        // 현재 Android 포팅판에서는 실제 대기 동작 없이 구문만 통과시킨다.
+        addFunction(FunctionCode.AWAIT, argumentBuilderDictionary[FunctionArgType.VOID], 6);
+        addFunction(FunctionCode.SETANIMETIMER, argumentBuilderDictionary[FunctionArgType.INT_ANY], 6);
+
+        addFunction(FunctionCode.PRINT_RECT, new PRINT_RECT_Instruction());
+        addFunction(FunctionCode.PRINT_SPACE, new PRINT_SPACE_Instruction());
 		addFunction(FunctionCode.TOOLTIP_SETCOLOR, new TOOLTIP_SETCOLOR_Instruction());
 		addFunction(FunctionCode.TOOLTIP_SETDELAY, new TOOLTIP_SETDELAY_Instruction());
 		addFunction(FunctionCode.VARSIZE, argumentBuilderDictionary[FunctionArgType.SP_VAR], 6);

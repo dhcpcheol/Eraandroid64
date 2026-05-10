@@ -7,7 +7,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <ApplicationId>com.dhcpcheol.EraAndroid64</ApplicationId>
 	  <ApplicationVersion>6</ApplicationVersion>
-	  <ApplicationDisplayVersion>1.6-beta.3</ApplicationDisplayVersion>
+	  <ApplicationDisplayVersion>1.6-beta.4</ApplicationDisplayVersion>
 	  <TargetSdkVersion>34</TargetSdkVersion>
 
 	  <!--

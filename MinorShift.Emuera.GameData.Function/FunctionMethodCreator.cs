@@ -545,8 +545,28 @@ internal static class FunctionMethodCreator
         }
     }
 
-        private sealed class CheckdataMethod : FunctionMethod
-	{
+    private sealed class TwDummyStrMethod : FunctionMethod
+    {
+        public TwDummyStrMethod()
+        {
+            base.ReturnType = typeof(string);
+            argumentTypeArray = null;
+            base.CanRestructure = false;
+        }
+
+        public override string CheckArgumentType(string name, IOperandTerm[] arguments)
+        {
+            return null;
+        }
+
+        public override string GetStrValue(ExpressionMediator exm, IOperandTerm[] arguments)
+        {
+            return "";
+        }
+    }
+
+    private sealed class CheckdataMethod : FunctionMethod
+    {
 		private string name;
 
 		private EraSaveFileType type;
@@ -3338,11 +3358,27 @@ internal static class FunctionMethodCreator
 		methodList["CSVJUEL"] = new CsvDataMethod(CharacterIntData.JUEL);
 		methodList["FINDCHARA"] = new FindcharaMethod(last: false);
 		methodList["FINDLASTCHARA"] = new FindcharaMethod(last: true);
-		methodList["EXISTCSV"] = new ExistCsvMethod();
-		methodList["VARSIZE"] = new VarsizeMethod();
-		methodList["CHKFONT"] = new CheckfontMethod();
-		methodList["CHKDATA"] = new CheckdataMethod("CHKDATA", EraSaveFileType.Normal);
-		methodList["ISSKIP"] = new IsSkipMethod();
+        methodList["EXISTCSV"] = new ExistCsvMethod();
+        methodList["VARSIZE"] = new VarsizeMethod();
+        methodList["CHKFONT"] = new CheckfontMethod();
+
+        // TW 4.956 호환을 위해 최신 Emuera 계열 식 함수를 우선 등록한다.
+        // 정식 구현 전까지는 기본값을 반환하여 파싱 중단을 방지한다.
+        methodList["EXISTVAR"] = new TwDummyIntMethod();
+        methodList["GETVAR"] = new TwDummyIntMethod();
+        methodList["GETVARS"] = new TwDummyStrMethod();
+        methodList["HTML_STRINGLEN"] = new TwDummyIntMethod();
+        methodList["GETKEY"] = new TwDummyIntMethod();
+        methodList["GETKEYTRIGGERED"] = new TwDummyIntMethod();
+
+        methodList["SPRITEPOSX"] = new TwDummyIntMethod();
+        methodList["SPRITEPOSY"] = new TwDummyIntMethod();
+
+        methodList["DT_CELL_GETS"] = new TwDummyStrMethod();
+        methodList["DT_ROW_LENGTH"] = new TwDummyIntMethod();
+
+        methodList["CHKDATA"] = new CheckdataMethod("CHKDATA", EraSaveFileType.Normal);
+        methodList["ISSKIP"] = new IsSkipMethod();
 		methodList["MOUSESKIP"] = new MesSkipMethod(warn: true);
 		methodList["MESSKIP"] = new MesSkipMethod(warn: false);
 		methodList["GETCOLOR"] = new GetColorMethod(isDef: false);
