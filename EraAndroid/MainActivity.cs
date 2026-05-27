@@ -89,8 +89,8 @@ public class MainActivity : Activity
                     if (IsValidCopiedFolder(copiedPathCandidate))
                     {
                         new AlertDialog.Builder(this)
-                            .SetTitle("기존 구상 복사본 발견")
-                            .SetMessage("기존에 복사된 구상 폴더가 있습니다.\n\n기존 복사본을 사용하면 빠르게 실행할 수 있습니다.\n구상 파일을 수정했다면 다시 불러오기를 선택하세요.")
+                            .SetTitle("기존 Era 복사본 발견")
+                            .SetMessage("기존에 복사된 Era 폴더가 있습니다.\n\n기존 복사본을 사용하면 빠르게 실행할 수 있습니다.\nEra 파일을 수정했다면 다시 불러오기를 선택하세요.")
                             .SetPositiveButton("기존 복사본 사용", (sender, args) =>
                             {
                                 StartCopyAndInitialize(selectedUri, false);
@@ -148,7 +148,7 @@ public class MainActivity : Activity
 
     private bool IsValidCopiedFolder(string copiedPath)
     {
-        // 기존 복사 폴더가 정상 구상 폴더인지 확인한다.
+        // 기존 복사 폴더가 정상 Era 폴더인지 확인한다.
         if (string.IsNullOrEmpty(copiedPath))
         {
             return false;
@@ -167,8 +167,8 @@ public class MainActivity : Activity
 
     private void StartCopyAndInitialize(string selectedUri, bool forceRecopy)
     {
-        ShowLoadingStatus("구상 폴더 복사를 준비합니다.");
-        Toast.MakeText(this, "SAF 폴더 선택 완료. 구상 폴더를 복사합니다.", ToastLength.Long).Show();
+        ShowLoadingStatus("Era 폴더 복사를 준비합니다.");
+        Toast.MakeText(this, "SAF 폴더 선택 완료. Era 폴더를 복사합니다.", ToastLength.Long).Show();
 
         FileLog.Info("SAF", "Copy Start: " + selectedUri);
         FileLog.Info("SAF", "Force Recopy: " + forceRecopy);
@@ -188,7 +188,7 @@ public class MainActivity : Activity
                 {
                     if (string.IsNullOrEmpty(copiedPath) || !Directory.Exists(copiedPath))
                     {
-                        Toast.MakeText(this, "구상 폴더 복사에 실패했습니다.", ToastLength.Long).Show();
+                        Toast.MakeText(this, "Era 폴더 복사에 실패했습니다.", ToastLength.Long).Show();
                         RunSelectFolderActivity();
                         return;
                     }
@@ -200,8 +200,8 @@ public class MainActivity : Activity
                     EraAndroidFileProvider.LocalRootPath = copiedPath;
                     EraAndroidFileProvider.AppContext = this;
 
-                    Toast.MakeText(this, "구상 폴더 복사 완료. 초기화를 시작합니다.", ToastLength.Long).Show();
-                    ShowLoadingStatus("구상 초기화 준비 중입니다.");
+                    Toast.MakeText(this, "Era 폴더 복사 완료. 초기화를 시작합니다.", ToastLength.Long).Show();
+                    ShowLoadingStatus("Era 초기화 준비 중입니다.");
 
                     Initialize(copiedPath);
                 });
@@ -212,7 +212,7 @@ public class MainActivity : Activity
 
                 RunOnUiThread(() =>
                 {
-                    Toast.MakeText(this, "구상 폴더 복사 중 오류가 발생했습니다: " + ex.Message, ToastLength.Long).Show();
+                    Toast.MakeText(this, "Era 폴더 복사 중 오류가 발생했습니다: " + ex.Message, ToastLength.Long).Show();
                     RunSelectFolderActivity();
                 });
             }
@@ -243,15 +243,15 @@ public class MainActivity : Activity
             return "";
         }
 
-        // 이미 앱 전용 폴더에 복사된 구상 데이터가 존재하는지 확인한다.
+        // 이미 앱 전용 폴더에 복사된 Era 데이터가 존재하는지 확인한다.
         if (Directory.Exists(copiedPath))
         {
             // CSV 폴더 존재 여부를 확인한다.
-            // 구상 실행에 필수적인 데이터이므로 존재 여부를 기준으로 판단한다.
+            // Era 실행에 필수적인 데이터이므로 존재 여부를 기준으로 판단한다.
             bool csvExists = Directory.Exists(Path.Combine(copiedPath, "CSV"));
 
             // ERB 파일 존재 여부를 확인한다.
-            // ERB는 구상 스크립트 파일이므로 최소 1개 이상 존재해야 정상이다.
+            // ERB는 Era 스크립트 파일이므로 최소 1개 이상 존재해야 정상이다.
             bool erbExists = Directory.GetFiles(copiedPath, "*.ERB", SearchOption.AllDirectories).Length > 0;
 
             // CSV 폴더와 ERB 파일이 모두 존재하는 경우,
@@ -259,7 +259,7 @@ public class MainActivity : Activity
             if (csvExists && erbExists)
             {
                 // 강제 재복사가 필요하지 않으면 기존 복사 폴더를 재사용한다.
-                // 앱 실행 중 같은 구상을 다시 사용할 때 전체 복사를 반복하지 않기 위한 처리이다.
+                // 앱 실행 중 같은 Era을 다시 사용할 때 전체 복사를 반복하지 않기 위한 처리이다.
                 if (!forceRecopy)
                 {
                     FileLog.Info("SAF", "기존 복사 폴더를 재사용한다: " + copiedPath);
@@ -284,12 +284,12 @@ public class MainActivity : Activity
 
         // SAF로 선택된 폴더의 전체 구조를 재귀적으로 복사한다.
         startupCopiedFileCount = 0;
-        ShowLoadingStatus("구상 폴더 복사 중입니다.");
-        FileLog.Info("SAF", "구상 폴더 전체 복사 시작: " + copiedPath);
+        ShowLoadingStatus("Era 폴더 복사 중입니다.");
+        FileLog.Info("SAF", "Era 폴더 전체 복사 시작: " + copiedPath);
 
         CopyDocumentTreeRecursive(rootDocument, copiedPath);
 
-        FileLog.Info("SAF", "구상 폴더 전체 복사 완료: " + copiedPath);
+        FileLog.Info("SAF", "Era 폴더 전체 복사 완료: " + copiedPath);
 
         FileLog.Info("SAF", "Copy Completed: " + copiedPath);
         FileLog.Info("SAF", "CSV Exists: " + Directory.Exists(Path.Combine(copiedPath, "CSV")));
@@ -374,7 +374,7 @@ public class MainActivity : Activity
 
         if (startupCopiedFileCount == 1 || startupCopiedFileCount % 25 == 0)
         {
-            ShowLoadingStatus("구상 파일 복사 중: " + startupCopiedFileCount + "개 복사");
+            ShowLoadingStatus("Era 파일 복사 중: " + startupCopiedFileCount + "개 복사");
         }
     }
 
@@ -414,7 +414,7 @@ public class MainActivity : Activity
 
     private void ApplySavedFontConfig()
     {
-        // 저장된 폰트 크기를 불러와 실제 구상 화면 설정에 적용한다.
+        // 저장된 폰트 크기를 불러와 실제 Era 화면 설정에 적용한다.
         string savedFontSize = DB.Load("fontSize");
         string savedLineHeight = DB.Load("lineHeight");
 
@@ -523,7 +523,7 @@ public class MainActivity : Activity
 
     private void EnsureMainLayoutLoaded()
     {
-        // 구상 실행 직전에만 실제 메인 화면 레이아웃을 로드한다.
+        // Era 실행 직전에만 실제 메인 화면 레이아웃을 로드한다.
         if (mainLayoutLoaded)
         {
             return;
@@ -535,7 +535,7 @@ public class MainActivity : Activity
         GameData.FrontEnd = FindViewById<EmueraFrontEnd>(global::EraAndroid64.Resource.Id.emueraConsole);
         GameData.ScrollView = FindViewById<ScrollView>(global::EraAndroid64.Resource.Id.emueraScrollView);
 
-        // 디버그 모드가 켜져 있으면 구상 화면 위에 DEBUG 버튼을 표시한다.
+        // 디버그 모드가 켜져 있으면 Era 화면 위에 DEBUG 버튼을 표시한다.
         if (DB.Load("debugMode") == "true")
         {
             AddDebugButton();
@@ -546,13 +546,13 @@ public class MainActivity : Activity
 
     private void Initialize(string eraPath)
     {
-        // 실제 구상 초기화가 시작될 때 메인 화면 레이아웃을 로드한다.
+        // 실제 Era 초기화가 시작될 때 메인 화면 레이아웃을 로드한다.
         EnsureMainLayoutLoaded();
 
-        // 구상 초기화 시작 지점을 기록한다.
+        // Era 초기화 시작 지점을 기록한다.
         FileLog.Info("Initialize", "Start: " + eraPath);
 
-        // 저장된 폰트 크기를 불러와 실제 구상 화면 설정에 적용한다.
+        // 저장된 폰트 크기를 불러와 실제 Era 화면 설정에 적용한다.
         string savedFontSize = DB.Load("fontSize");
 
         if (int.TryParse(savedFontSize, out int fontSize))
@@ -577,7 +577,7 @@ public class MainActivity : Activity
         ApplySavedFontConfig();
 
         // 초기화 상태 표시창이 정상적으로 표시되는지 확인하기 위한 문구이다.
-        ShowLoadingStatus("구상 파일 읽기 준비 중입니다.");
+        ShowLoadingStatus("Era 파일 읽기 준비 중입니다.");
 
         MinorShift.Emuera.Program.Main(this, GameData.FrontEnd, eraPath);
 
@@ -654,7 +654,7 @@ public class MainActivity : Activity
 
         RequestedOrientation = ScreenOrientation.Portrait;
 
-        // 폰트 설정과 경로 선택이 끝나기 전에는 구상 화면 레이아웃을 로드하지 않는다.
+        // 폰트 설정과 경로 선택이 끝나기 전에는 Era 화면 레이아웃을 로드하지 않는다.
         // Activity 전환 사이에 "메모리 초기화중" 화면이 잠깐 보이는 현상을 막기 위한 처리이다.
         RunSetFontSizeActivity();
     }

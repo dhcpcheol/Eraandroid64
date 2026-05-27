@@ -2740,7 +2740,7 @@ internal sealed class FunctionIdentifier
         addFunction(FunctionCode.CALLF, new CALLF_Instruction(form: false));
         addFunction(FunctionCode.CALLFORMF, new CALLF_Instruction(form: true));
 
-        // TW 4.956 일부 구상은 식 중 함수 호출을 실패 허용 형태로 호출한다.
+        // TW 4.956 일부 Era은 식 중 함수 호출을 실패 허용 형태로 호출한다.
         // 현재 엔진에는 TRYCALLF 계열이 없으므로 CALLF와 같은 처리로 우선 해석시킨다.
         addFunction(FunctionCode.TRYCALLF, new CALLF_Instruction(form: false));
         addFunction(FunctionCode.TRYCALLFORMF, new CALLF_Instruction(form: true));
